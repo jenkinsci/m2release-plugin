@@ -173,7 +173,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 
 		build.addAction(new M2ReleaseArgumentInterceptorAction(buildGoals.toString()));
 		build.addAction(new M2ReleaseBadgeAction(args.getReleaseVersion(), args.isDryRun()));
-
+                
 		return new Environment() {
 
 			@Override
@@ -197,6 +197,15 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 
 				int buildsKept = 0;
 				if (bld.getResult() != null && bld.getResult().isBetterOrEqualTo(Result.SUCCESS) && !args.isDryRun()) {
+                                        if(args.getAppendMavenVersion()) {
+                                            String newDisplay = bld.getDisplayName() + " " + args.getReleaseVersion();
+                                            lstnr.getLogger().println("[M2Release] appending Maven Release Version to Build Name");
+                                            lstnr.getLogger().println("[M2Release] new display name=" + newDisplay);
+                                            bld.setDisplayName(newDisplay);
+                                        } else {
+                                            lstnr.getLogger().println("[M2Release] not appending Maven Release Version number");
+                                        }
+
 					if (numberOfReleaseBuildsToKeep > 0 || numberOfReleaseBuildsToKeep == -1) {
 						// keep this build.
 						lstnr.getLogger().println("[M2Release] assigning keep build to current build.");
@@ -461,6 +470,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		public static final String     DEFAULT_RELEASE_VERSION_ENVVAR = "MVN_RELEASE_VERSION"; //$NON-NLS-1$
 		public static final String     DEFAULT_DEV_VERSION_ENVVAR = "MVN_DEV_VERSION"; //$NON-NLS-1$
 		public static final String     DEFAULT_DRYRUN_ENVVAR = "MVN_ISDRYRUN"; //$NON-NLS-1$
+                public static final String     DEFAULT_APPEND_MAVEN_VERSION_ENVVAR = "MVN_APPENDMVNVERSION"; //$NON-NLS-1$
 
 		public static final boolean    DEFAULT_SELECT_CUSTOM_SCM_COMMENT_PREFIX = false;
 		public static final boolean    DEFAULT_SELECT_APPEND_HUDSON_USERNAME    = false;
