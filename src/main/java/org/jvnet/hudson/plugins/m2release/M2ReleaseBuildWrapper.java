@@ -198,7 +198,11 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 				int buildsKept = 0;
 				if (bld.getResult() != null && bld.getResult().isBetterOrEqualTo(Result.SUCCESS) && !args.isDryRun()) {
                                         if(args.getAppendMavenVersion()) {
-                                            String newDisplay = bld.getDisplayName() + " " + args.getReleaseVersion();
+                                            String newDisplay = bld.getDisplayName() + " (";
+                                            if(!args.getReleaseVersion().toLowerCase().startsWith("v")) {
+                                                newDisplay += "v";
+                                            }
+                                            newDisplay += args.getReleaseVersion() + ")";
                                             lstnr.getLogger().println("[M2Release] appending Maven Release Version to Build Name");
                                             lstnr.getLogger().println("[M2Release] new display name=" + newDisplay);
                                             bld.setDisplayName(newDisplay);
