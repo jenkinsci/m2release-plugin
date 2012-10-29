@@ -59,6 +59,7 @@ public class M2ReleaseArgumentsAction implements Action {
 	private transient String scmPassword;
 	private transient String scmCommentPrefix;
 	private String scmTagName;
+	private String submodules;
 
 	private transient boolean appendHusonUserName;
 	private transient String hudsonUserName;
@@ -184,6 +185,14 @@ public class M2ReleaseArgumentsAction implements Action {
 
 	public void setHudsonUserName(String hudsonUserName) {
 		this.hudsonUserName = hudsonUserName;
+	}
+
+	public String getSubmodules() {
+		return submodules;
+	}
+
+	public void setSubmodules(String submodules) {
+		this.submodules = submodules;
 	}
 
 }

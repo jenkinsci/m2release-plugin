@@ -99,6 +99,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	public boolean                        selectCustomScmCommentPrefix = DescriptorImpl.DEFAULT_SELECT_CUSTOM_SCM_COMMENT_PREFIX;
 	public boolean                        selectAppendHudsonUsername   = DescriptorImpl.DEFAULT_SELECT_APPEND_HUDSON_USERNAME;
 	public boolean                        selectScmCredentials         = DescriptorImpl.DEFAULT_SELECT_SCM_CREDENTIALS;
+	public boolean                        selectSubmodules         = DescriptorImpl.DEFAULT_SELECT_SUBMODULES;
 	
 	public int                            numberOfReleaseBuildsToKeep  = DescriptorImpl.DEFAULT_NUMBER_OF_RELEASE_BUILDS_TO_KEEP;
 	
@@ -162,6 +163,10 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 
 		if (args.getScmTagName() != null) {
 			buildGoals.append("-Dtag=").append(args.getScmTagName()).append(' ');
+		}
+		
+		if (args.getSubmodules() != null) {
+			buildGoals.append("--projects ").append(args.getSubmodules()).append(' ');
 		}
 
 		if (args.isDryRun()) {
@@ -373,7 +378,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 
 	@Override
 	public Action getProjectAction(@SuppressWarnings("rawtypes") AbstractProject job) {
-		return new M2ReleaseAction((MavenModuleSet) job, selectCustomScmCommentPrefix, selectAppendHudsonUsername, selectScmCredentials);
+		return new M2ReleaseAction((MavenModuleSet) job, selectCustomScmCommentPrefix, selectAppendHudsonUsername, selectScmCredentials, selectSubmodules);
 	}
 
 	/**
@@ -465,6 +470,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		public static final boolean    DEFAULT_SELECT_CUSTOM_SCM_COMMENT_PREFIX = false;
 		public static final boolean    DEFAULT_SELECT_APPEND_HUDSON_USERNAME    = false;
 		public static final boolean    DEFAULT_SELECT_SCM_CREDENTIALS           = false;
+		public static final boolean    DEFAULT_SELECT_SUBMODULES	            = false;
 
 		public static final int        DEFAULT_NUMBER_OF_RELEASE_BUILDS_TO_KEEP = 1;
 
