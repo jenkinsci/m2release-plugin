@@ -23,6 +23,8 @@
  */
 package org.jvnet.hudson.plugins.m2release;
 
+import static java.util.regex.Matcher.quoteReplacement;
+import static java.util.regex.Pattern.compile;
 import hudson.maven.MavenModule;
 import hudson.maven.MavenModuleSet;
 import hudson.model.ParameterValue;
@@ -44,6 +46,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 
@@ -170,13 +174,26 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	}
 
 	public String computeScmTag() {
-		// maven default is artifact-version
-		String artifactId = getRootModule() == null ? "M2RELEASE-TAG" : getRootModule().getModuleName().artifactId;
-		StringBuilder sb = new StringBuilder();
-		sb.append(artifactId);
-		sb.append('-');
-		sb.append(computeReleaseVersion());
+		StringBuffer sb = new StringBuffer();
+		PlaceholderExpander expander = new PlaceholderExpander(project.getBuildWrappersList().get(M2ReleaseBuildWrapper.class).getScmTagTemplate());
+		
+		while(expander.find()) {
+			expander.appendReplacement(sb, resolvePlaceholder(expander.getPlaceholderName()));
+		}
+		
+		expander.appendTail(sb);
+
 		return sb.toString();
+	}
+
+	private String resolvePlaceholder(String name) {
+		if("VERSION".equals(name)) {
+			return computeReleaseVersion();
+		} else if("ARTIFACT_ID".equals(name)) {
+			return getRootModule() == null ? "M2RELEASE-TAG" : getRootModule().getModuleName().artifactId;
+		} else {
+			return "";
+		}
 	}
 
 	public String computeNextVersion() {
@@ -216,7 +233,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		final boolean specifyScmCommentPrefix = httpParams.containsKey("specifyScmCommentPrefix"); //$NON-NLS-1$
 		final String scmCommentPrefix = specifyScmCommentPrefix ? getString("scmCommentPrefix", httpParams) : null; //$NON-NLS-1$
 		final boolean specifyScmTag = httpParams.containsKey("specifyScmTag"); //$NON-NLS-1$
-		final String scmTag = specifyScmTag ? getString("scmTag", httpParams) : null; //$NON-NLS-1$
+		final String scmTag = specifyScmTag ? getString("scmTag", httpParams) : computeScmTag(); //$NON-NLS-1$
 
 		final boolean appendHusonUserName = specifyScmCommentPrefix && httpParams.containsKey("appendHudsonUserName"); //$NON-NLS-1$
 		final boolean isDryRun = httpParams.containsKey("isDryRun"); //$NON-NLS-1$
@@ -334,4 +351,42 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	}
 
 	private static final List<Permalink> PERMALINKS = Collections.singletonList(LastReleasePermalink.INSTANCE);
+
+
+	static class PlaceholderExpander {
+        private static final Pattern placeholderPattern = compile("\\$(([a-zA-Z0-9_]+)|(\\{([a-zA-Z0-9_]+)\\}))");
+
+        private Matcher matcher;
+        
+        private String placeholderName = null;
+
+        PlaceholderExpander(String template) {
+            matcher = placeholderPattern.matcher(template);
+        }
+
+        String getPlaceholderName() {
+            return placeholderName;
+        }
+
+
+        boolean find() {
+            if (matcher.find()) {
+                placeholderName = matcher.group(2);
+                if (placeholderName == null) {
+                    placeholderName = matcher.group(4);
+                }
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        void appendReplacement(StringBuffer sb, String replacement) {
+            matcher.appendReplacement(sb, quoteReplacement(replacement));
+        }
+
+        void appendTail(StringBuffer sb) {
+            matcher.appendTail(sb);
+        }
+    }
 }

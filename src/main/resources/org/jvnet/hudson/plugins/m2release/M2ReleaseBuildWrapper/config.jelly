@@ -48,5 +48,8 @@
 		<f:entry title="SCM password environment variable" help="/plugin/m2release/help-projectConfig-scmPasswordEnvVar.html">
 			<f:textbox field="scmPasswordEnvVar" value="${instance.scmPasswordEnvVar}"/>
 		</f:entry>
+		<f:entry title="SCM tag template" help="/plugin/m2release/help-projectConfig-scmTagTemplate.html">
+			<f:textbox field="scmTagTemplate" value="${h.defaulted(instance.scmTagTemplate,descriptor.DEFAULT_SCM_TAG_TEMPLATE)}"/>
+		</f:entry>
 	</f:advanced>
 </j:jelly>

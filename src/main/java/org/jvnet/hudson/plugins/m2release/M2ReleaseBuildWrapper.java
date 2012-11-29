@@ -93,6 +93,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	
 	private String                        scmUserEnvVar                = "";
 	private String                        scmPasswordEnvVar            = "";
+	private String                        scmTagTemplate               = DescriptorImpl.DEFAULT_SCM_TAG_TEMPLATE;
 	private String                        releaseEnvVar                = DescriptorImpl.DEFAULT_RELEASE_ENVVAR;
 	private String                        releaseGoals                 = DescriptorImpl.DEFAULT_RELEASE_GOALS;
 	private String                        dryRunGoals                  = DescriptorImpl.DEFAULT_DRYRUN_GOALS;
@@ -103,7 +104,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	public int                            numberOfReleaseBuildsToKeep  = DescriptorImpl.DEFAULT_NUMBER_OF_RELEASE_BUILDS_TO_KEEP;
 	
 	@DataBoundConstructor
-	public M2ReleaseBuildWrapper(String releaseGoals, String dryRunGoals, boolean selectCustomScmCommentPrefix, boolean selectAppendHudsonUsername, boolean selectScmCredentials, String releaseEnvVar, String scmUserEnvVar, String scmPasswordEnvVar, int numberOfReleaseBuildsToKeep) {
+	public M2ReleaseBuildWrapper(String releaseGoals, String dryRunGoals, boolean selectCustomScmCommentPrefix, boolean selectAppendHudsonUsername, boolean selectScmCredentials, String releaseEnvVar, String scmUserEnvVar, String scmPasswordEnvVar, String scmTagTemplate, int numberOfReleaseBuildsToKeep) {
 		super();
 		this.releaseGoals = releaseGoals;
 		this.dryRunGoals = dryRunGoals;
@@ -113,6 +114,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		this.releaseEnvVar = releaseEnvVar;
 		this.scmUserEnvVar = scmUserEnvVar;
 		this.scmPasswordEnvVar = scmPasswordEnvVar;
+		this.scmTagTemplate = scmTagTemplate;
 		this.numberOfReleaseBuildsToKeep = numberOfReleaseBuildsToKeep;
 	}
 
@@ -355,6 +357,10 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		return scmPasswordEnvVar;
 	}
 	
+	public String getScmTagTemplate() {
+		return scmTagTemplate;
+	}
+
 	public String getReleaseGoals() {
 		return StringUtils.isBlank(releaseGoals) ? DescriptorImpl.DEFAULT_RELEASE_GOALS : releaseGoals;
 	}
@@ -469,6 +475,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		public static final String     DEFAULT_RELEASE_VERSION_ENVVAR = "MVN_RELEASE_VERSION"; //$NON-NLS-1$
 		public static final String     DEFAULT_DEV_VERSION_ENVVAR = "MVN_DEV_VERSION"; //$NON-NLS-1$
 		public static final String     DEFAULT_DRYRUN_ENVVAR = "MVN_ISDRYRUN"; //$NON-NLS-1$
+		public static final String     DEFAULT_SCM_TAG_TEMPLATE = "${ARTIFACT_ID}-${VERSION}";
 
 		public static final boolean    DEFAULT_SELECT_CUSTOM_SCM_COMMENT_PREFIX = false;
 		public static final boolean    DEFAULT_SELECT_APPEND_HUDSON_USERNAME    = false;
