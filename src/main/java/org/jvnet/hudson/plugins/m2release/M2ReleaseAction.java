@@ -71,12 +71,14 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	private boolean selectCustomScmTag = false;
 	private boolean selectAppendHudsonUsername;
 	private boolean selectScmCredentials;
+	private boolean selectSubmoduleRelease;
 
-	public M2ReleaseAction(MavenModuleSet project, boolean selectCustomScmCommentPrefix, boolean selectAppendHudsonUsername, boolean selectScmCredentials) {
+	public M2ReleaseAction(MavenModuleSet project, boolean selectCustomScmCommentPrefix, boolean selectAppendHudsonUsername, boolean selectScmCredentials, boolean selectSubmoduleRelease) {
 		this.project = project;
 		this.selectCustomScmCommentPrefix = selectCustomScmCommentPrefix;
 		this.selectAppendHudsonUsername = selectAppendHudsonUsername;
 		this.selectScmCredentials = selectScmCredentials;
+		this.selectSubmoduleRelease = selectSubmoduleRelease;
 		if (getRootModule() == null) {
 			// if the root module is not available, the user should be informed
 			// about the stuff we are not able to compute
@@ -131,6 +133,14 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 
 	public void setSelectAppendHudsonUsername(boolean selectAppendHudsonUsername) {
 		this.selectAppendHudsonUsername = selectAppendHudsonUsername;
+	}
+
+	public boolean isSelectSubmoduleRelease() {
+		return selectSubmoduleRelease;
+	}
+
+	public void setSelectSubmoduleRelease(boolean selectSubmoduleRelease) {
+		this.selectSubmoduleRelease = selectSubmoduleRelease;
 	}
 
 	public boolean isSelectCustomScmTag() {
@@ -217,6 +227,8 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		final String scmCommentPrefix = specifyScmCommentPrefix ? getString("scmCommentPrefix", httpParams) : null; //$NON-NLS-1$
 		final boolean specifyScmTag = httpParams.containsKey("specifyScmTag"); //$NON-NLS-1$
 		final String scmTag = specifyScmTag ? getString("scmTag", httpParams) : null; //$NON-NLS-1$
+		final boolean submoduleRelease = httpParams.containsKey("submoduleRelease"); //$NON-NLS-1$
+		final String submodules = submoduleRelease ? getString("submodules", httpParams) : null; //$NON-NLS-1$
 
 		final boolean appendHusonUserName = specifyScmCommentPrefix && httpParams.containsKey("appendHudsonUserName"); //$NON-NLS-1$
 		final boolean isDryRun = httpParams.containsKey("isDryRun"); //$NON-NLS-1$
@@ -278,6 +290,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		arguments.setScmUsername(scmUsername);
 		arguments.setScmPassword(scmPassword);
 		arguments.setScmTagName(scmTag);
+		arguments.setSubmodules(submodules);
 		arguments.setScmCommentPrefix(scmCommentPrefix);
 		arguments.setAppendHusonUserName(appendHusonUserName);
 		arguments.setHudsonUserName(Hudson.getAuthentication().getName());
