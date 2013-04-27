@@ -44,6 +44,12 @@
 							<f:textbox name="scmTag" value="${it.computeScmTag()}" />
 						</f:entry>
 					</f:optionalBlock>
+					
+					<f:optionalBlock name="submoduleRelease" title="Release Specific Submodules" checked="${it.selectSubmoduleRelease}" help="/plugin/m2release/help-actionRelease-specifySubmodule.html">
+						<f:entry title="Submodules">
+							<f:textbox name="submodules" value="" />
+						</f:entry>
+					</f:optionalBlock>
 
 					<j:if test="${it.nexusSupportEnabled}">
 						<f:section title="Nexus Pro Support">
