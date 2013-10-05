@@ -208,6 +208,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		Map<?, ?> httpParams = req.getParameterMap();
 
 		final boolean appendHudsonBuildNumber = httpParams.containsKey("appendHudsonBuildNumber"); //$NON-NLS-1$
+                final boolean appendMavenVersion = httpParams.containsKey("appendMavenVersion"); //$NON-NLS-1$
 		final boolean closeNexusStage = httpParams.containsKey("closeNexusStage"); //$NON-NLS-1$
 		final String repoDescription = closeNexusStage ? getString("repoDescription", httpParams) : ""; //$NON-NLS-1$
 		final boolean specifyScmCredentials = httpParams.containsKey("specifyScmCredentials"); //$NON-NLS-1$
@@ -264,12 +265,14 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		values.add(new StringParameterValue(M2ReleaseBuildWrapper.DescriptorImpl.DEFAULT_RELEASE_VERSION_ENVVAR, releaseVersion));
 		values.add(new StringParameterValue(M2ReleaseBuildWrapper.DescriptorImpl.DEFAULT_DEV_VERSION_ENVVAR, developmentVersion));
 		values.add(new BooleanParameterValue(M2ReleaseBuildWrapper.DescriptorImpl.DEFAULT_DRYRUN_ENVVAR, isDryRun));
+                values.add(new BooleanParameterValue(M2ReleaseBuildWrapper.DescriptorImpl.DEFAULT_APPEND_MAVEN_VERSION_ENVVAR, appendMavenVersion));
 
 		// schedule release build
 		ParametersAction parameters = new ParametersAction(values);
 
 		M2ReleaseArgumentsAction arguments = new M2ReleaseArgumentsAction();
 		arguments.setDryRun(isDryRun);
+                arguments.setAppendMavenVersion(appendMavenVersion);
 
 		arguments.setReleaseVersion(releaseVersion);
 		arguments.setDevelopmentVersion(developmentVersion);

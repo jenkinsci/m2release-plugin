@@ -54,6 +54,7 @@ public class M2ReleaseArgumentsAction implements Action {
 	private transient String repoDescription;
 
 	private boolean dryRun = false;
+        private boolean appendMavenVersion = false;
 
 	private transient String scmUsername;
 	private transient String scmPassword;
@@ -186,4 +187,11 @@ public class M2ReleaseArgumentsAction implements Action {
 		this.hudsonUserName = hudsonUserName;
 	}
 
+        public boolean getAppendMavenVersion() {
+		return appendMavenVersion;
+	}
+
+	public void setAppendMavenVersion(boolean appendMavenVersion) {
+		this.appendMavenVersion = appendMavenVersion;
+	}
 }

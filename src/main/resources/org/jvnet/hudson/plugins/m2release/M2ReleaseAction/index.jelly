@@ -17,6 +17,9 @@
 					<f:entry title="Append Hudson Build Number">
 						<f:checkbox name="appendHudsonBuildNumber" checked="false"/>
 					</f:entry>
+                                        <f:entry title="Append Release Version to Build name">
+						<f:checkbox name="appendMavenVersion" checked="false"/>
+					</f:entry>
 					<f:entry title="Dry run only?">
                         <f:checkbox name="isDryRun" checked="false"/>
                     </f:entry>
