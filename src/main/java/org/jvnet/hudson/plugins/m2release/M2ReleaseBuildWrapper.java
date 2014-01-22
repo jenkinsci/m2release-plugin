@@ -23,7 +23,6 @@
  */
 package org.jvnet.hudson.plugins.m2release;
 
-import com.sun.corba.se.impl.oa.NullServantImpl;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.Util;
