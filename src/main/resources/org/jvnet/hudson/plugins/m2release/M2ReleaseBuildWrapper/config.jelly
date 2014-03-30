@@ -10,6 +10,11 @@
 		-->
 		<f:textbox field="releaseGoals" value="${h.defaulted(instance.releaseGoals,descriptor.DEFAULT_RELEASE_GOALS)}"/>
 	</f:entry>
+
+    <f:entry title="Rollback goals and options" help="/plugin/m2release/help-projectConfig-rollbackGoals.html">
+        <f:textbox field="rollbackGoals" value="${h.defaulted(instance.rollbackGoals,descriptor.DEFAULT_ROLLBACK_GOALS)}"/>
+    </f:entry>
+
 	<f:entry title="DryRun goals and options" help="/plugin/m2release/help-projectConfig-dryRunGoals.html">
 		<f:textbox field="dryRunGoals" value="${h.defaulted(instance.dryRunGoals,descriptor.DEFAULT_DRYRUN_GOALS)}"/>
 	</f:entry>  

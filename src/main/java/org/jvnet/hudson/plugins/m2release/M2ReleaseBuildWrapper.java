@@ -45,6 +45,7 @@ import hudson.security.PermissionGroup;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import hudson.tasks.Builder;
+import hudson.tasks.Maven;
 import hudson.util.FormValidation;
 import hudson.util.RunList;
 
@@ -95,6 +96,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	private String                        scmPasswordEnvVar            = "";
 	private String                        releaseEnvVar                = DescriptorImpl.DEFAULT_RELEASE_ENVVAR;
 	private String                        releaseGoals                 = DescriptorImpl.DEFAULT_RELEASE_GOALS;
+    private String                        rollbackGoals                = DescriptorImpl.DEFAULT_ROLLBACK_GOALS;
 	private String                        dryRunGoals                  = DescriptorImpl.DEFAULT_DRYRUN_GOALS;
 	public boolean                        selectCustomScmCommentPrefix = DescriptorImpl.DEFAULT_SELECT_CUSTOM_SCM_COMMENT_PREFIX;
 	public boolean                        selectAppendHudsonUsername   = DescriptorImpl.DEFAULT_SELECT_APPEND_HUDSON_USERNAME;
@@ -103,9 +105,10 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	public int                            numberOfReleaseBuildsToKeep  = DescriptorImpl.DEFAULT_NUMBER_OF_RELEASE_BUILDS_TO_KEEP;
 	
 	@DataBoundConstructor
-	public M2ReleaseBuildWrapper(String releaseGoals, String dryRunGoals, boolean selectCustomScmCommentPrefix, boolean selectAppendHudsonUsername, boolean selectScmCredentials, String releaseEnvVar, String scmUserEnvVar, String scmPasswordEnvVar, int numberOfReleaseBuildsToKeep) {
+	public M2ReleaseBuildWrapper(String releaseGoals,String rollbackGoals, String dryRunGoals, boolean selectCustomScmCommentPrefix, boolean selectAppendHudsonUsername, boolean selectScmCredentials, String releaseEnvVar, String scmUserEnvVar, String scmPasswordEnvVar, int numberOfReleaseBuildsToKeep) {
 		super();
 		this.releaseGoals = releaseGoals;
+        this.rollbackGoals = rollbackGoals;
 		this.dryRunGoals = dryRunGoals;
 		this.selectCustomScmCommentPrefix = selectCustomScmCommentPrefix;
 		this.selectAppendHudsonUsername = selectAppendHudsonUsername;
@@ -118,7 +121,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 
 
 	@Override
-	public Environment setUp(@SuppressWarnings("rawtypes") AbstractBuild build, Launcher launcher, final BuildListener listener)
+	public Environment setUp(@SuppressWarnings("rawtypes") final AbstractBuild build, final Launcher launcher, final BuildListener listener)
 	                                                                                              throws IOException,
 	                                                                                              InterruptedException {
 
@@ -186,7 +189,11 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 				boolean retVal = true;
 				final MavenModuleSet mmSet = getModuleSet(bld);
 				M2ReleaseArgumentsAction args = bld.getAction(M2ReleaseArgumentsAction.class);
-				
+
+                if (bld.getResult() != Result.SUCCESS) {
+                    executeRollback(bld, lstnr, launcher);
+                }
+
 				if (args.isDryRun()) {
 					lstnr.getLogger().println("[M2Release] its only a dryRun, no need to mark it for keep");
 				}
@@ -265,7 +272,31 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 				return retVal;
 			}
 
-			/**
+            private boolean executeRollback(AbstractBuild bld, BuildListener lstnr, Launcher launcher) throws IOException, InterruptedException {
+                boolean isSuccess = false;
+
+                if (Util.fixEmptyAndTrim(rollbackGoals) != null) {
+                    String thisBuildGoals = rollbackGoals;
+
+                    if (scmUserEnvVar != null) {
+                        thisBuildGoals = "-Dusername=" + scmUserEnvVar + " " + thisBuildGoals;
+                    }
+
+                    if (scmPasswordEnvVar != null) {
+                        thisBuildGoals = "-Dpassword=" + scmPasswordEnvVar + " " + thisBuildGoals;
+                    }
+
+                    String mavenName = getModuleSet(bld).getMaven().getName();
+                    Maven buildStep = new Maven(thisBuildGoals, mavenName);
+                    isSuccess = buildStep.prebuild(bld, lstnr);
+                    if (isSuccess) {
+                        isSuccess = buildStep.perform(bld, launcher, lstnr);
+                    }
+                }
+                return isSuccess;
+            }
+
+            /**
 			 * evaluate if the specified build is a sucessful release build (not including dry runs)
 			 * @param run the run to check
 			 * @return <code>true</code> if this is a successful release build that is not a dry run.
@@ -460,6 +491,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		}
 
 		public static final String     DEFAULT_RELEASE_GOALS = "-Dresume=false release:prepare release:perform"; //$NON-NLS-1$
+        public static final String     DEFAULT_ROLLBACK_GOALS = "release:rollback";
 		public static final String     DEFAULT_DRYRUN_GOALS = "-Dresume=false -DdryRun=true release:prepare"; //$NON-NLS-1$
 		public static final String     DEFAULT_RELEASE_ENVVAR = "IS_M2RELEASEBUILD"; //$NON-NLS-1$
 		public static final String     DEFAULT_RELEASE_VERSION_ENVVAR = "MVN_RELEASE_VERSION"; //$NON-NLS-1$
