@@ -99,11 +99,12 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	public boolean                        selectCustomScmCommentPrefix = DescriptorImpl.DEFAULT_SELECT_CUSTOM_SCM_COMMENT_PREFIX;
 	public boolean                        selectAppendHudsonUsername   = DescriptorImpl.DEFAULT_SELECT_APPEND_HUDSON_USERNAME;
 	public boolean                        selectScmCredentials         = DescriptorImpl.DEFAULT_SELECT_SCM_CREDENTIALS;
+	public boolean                        selectAppendJenkinsBuildNumber = DescriptorImpl.DEFAULT_SELECT_APPEND_JENKINS_BUILD_NUMBER;
 	
 	public int                            numberOfReleaseBuildsToKeep  = DescriptorImpl.DEFAULT_NUMBER_OF_RELEASE_BUILDS_TO_KEEP;
 	
 	@DataBoundConstructor
-	public M2ReleaseBuildWrapper(String releaseGoals, String dryRunGoals, boolean selectCustomScmCommentPrefix, boolean selectAppendHudsonUsername, boolean selectScmCredentials, String releaseEnvVar, String scmUserEnvVar, String scmPasswordEnvVar, int numberOfReleaseBuildsToKeep) {
+	public M2ReleaseBuildWrapper(String releaseGoals, String dryRunGoals, boolean selectCustomScmCommentPrefix, boolean selectAppendHudsonUsername, boolean selectScmCredentials, String releaseEnvVar, String scmUserEnvVar, String scmPasswordEnvVar, int numberOfReleaseBuildsToKeep, boolean selectAppendJenkinsBuildNumber) {
 		super();
 		this.releaseGoals = releaseGoals;
 		this.dryRunGoals = dryRunGoals;
@@ -114,6 +115,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		this.scmUserEnvVar = scmUserEnvVar;
 		this.scmPasswordEnvVar = scmPasswordEnvVar;
 		this.numberOfReleaseBuildsToKeep = numberOfReleaseBuildsToKeep;
+		this.selectAppendJenkinsBuildNumber = selectAppendJenkinsBuildNumber;
 	}
 
 
@@ -316,6 +318,14 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		this.numberOfReleaseBuildsToKeep = numberOfReleaseBuildsToKeep;
 	}
 
+	public boolean isSelectAppendJenkinsBuildNumber() {
+		return selectAppendJenkinsBuildNumber;
+	}
+
+	public void setSelectAppendJenkinsBuildNumber(boolean selectAppendJenkinsBuildNumber) {
+		this.selectAppendJenkinsBuildNumber = selectAppendJenkinsBuildNumber;
+	}
+
 	private MavenModuleSet getModuleSet(AbstractBuild<?,?> build) {
 		if (build instanceof MavenBuild) {
 			MavenBuild m2Build = (MavenBuild) build;
@@ -381,7 +391,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 
 	@Override
 	public Action getProjectAction(@SuppressWarnings("rawtypes") AbstractProject job) {
-		return new M2ReleaseAction((MavenModuleSet) job, selectCustomScmCommentPrefix, selectAppendHudsonUsername, selectScmCredentials);
+		return new M2ReleaseAction((MavenModuleSet) job, selectCustomScmCommentPrefix, selectAppendHudsonUsername, selectScmCredentials, selectAppendJenkinsBuildNumber);
 	}
 
 	/**
@@ -473,6 +483,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		public static final boolean    DEFAULT_SELECT_CUSTOM_SCM_COMMENT_PREFIX = false;
 		public static final boolean    DEFAULT_SELECT_APPEND_HUDSON_USERNAME    = false;
 		public static final boolean    DEFAULT_SELECT_SCM_CREDENTIALS           = false;
+		public static final boolean    DEFAULT_SELECT_APPEND_JENKINS_BUILD_NUMBER = false;
 
 		public static final int        DEFAULT_NUMBER_OF_RELEASE_BUILDS_TO_KEEP = 1;
 

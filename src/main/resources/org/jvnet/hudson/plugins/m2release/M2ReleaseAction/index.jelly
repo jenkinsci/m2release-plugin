@@ -14,8 +14,8 @@
 					<f:entry title="Development version">
 						<f:textbox name="developmentVersion" value="${it.computeNextVersion()}" />
 					</f:entry>
-					<f:entry title="Append Jenkins Build Number">
-						<f:checkbox name="appendJenkinsBuildNumber" checked="false"/>
+					<f:entry title="Append Jenkins Build Number" help="/plugin/m2release/help-actionRelease-appendJenkinsBuildNumber.html">
+						<f:checkbox name="appendJenkinsBuildNumber" checked="${it.selectAppendJenkinsBuildNumber}"/>
 					</f:entry>
 					<f:entry title="Dry run only?">
                         <f:checkbox name="isDryRun" checked="false"/>
