@@ -207,6 +207,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		// good old http...
 		Map<?, ?> httpParams = req.getParameterMap();
 
+		final boolean appendJenkinsBuildNumber = httpParams.containsKey("appendJenkinsBuildNumber"); //$NON-NLS-1$
 		final boolean closeNexusStage = httpParams.containsKey("closeNexusStage"); //$NON-NLS-1$
 		final String repoDescription = closeNexusStage ? getString("repoDescription", httpParams) : ""; //$NON-NLS-1$
 		final boolean specifyScmCredentials = httpParams.containsKey("specifyScmCredentials"); //$NON-NLS-1$
@@ -282,6 +283,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		arguments.setScmCommentPrefix(scmCommentPrefix);
 		arguments.setAppendHusonUserName(appendHusonUserName);
 		arguments.setHudsonUserName(Hudson.getAuthentication().getName());
+		arguments.setAppendJenkinsBuildNumber(appendJenkinsBuildNumber);
 
 		
 		if (project.scheduleBuild(0, new ReleaseCause(), parameters, arguments)) {

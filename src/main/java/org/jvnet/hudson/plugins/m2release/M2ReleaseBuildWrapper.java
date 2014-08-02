@@ -141,7 +141,11 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		StringBuilder buildGoals = new StringBuilder();
 
 		buildGoals.append("-DdevelopmentVersion=").append(args.getDevelopmentVersion()).append(' ');
-		buildGoals.append("-DreleaseVersion=").append(args.getReleaseVersion()).append(' ');
+		buildGoals.append("-DreleaseVersion=").append(args.getReleaseVersion());
+		if (args.isAppendJenkinsBuildNumber()) {
+			buildGoals.append('-').append(build.getNumber());
+		}
+		buildGoals.append(' ');
 
 		if (args.getScmUsername() != null) {
 			buildGoals.append("-Dusername=").append(args.getScmUsername()).append(' ');

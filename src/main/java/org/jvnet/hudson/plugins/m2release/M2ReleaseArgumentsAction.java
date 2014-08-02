@@ -62,6 +62,7 @@ public class M2ReleaseArgumentsAction implements Action {
 
 	private transient boolean appendHusonUserName;
 	private transient String hudsonUserName;
+	private transient boolean appendJenkinsBuildNumber;
 
 	public M2ReleaseArgumentsAction() {
 		super();
@@ -184,6 +185,14 @@ public class M2ReleaseArgumentsAction implements Action {
 
 	public void setHudsonUserName(String hudsonUserName) {
 		this.hudsonUserName = hudsonUserName;
+	}
+
+	public boolean isAppendJenkinsBuildNumber() {
+		return appendJenkinsBuildNumber;
+	}
+
+	public void setAppendJenkinsBuildNumber(boolean appendJenkinsBuildNumber) {
+		this.appendJenkinsBuildNumber = appendJenkinsBuildNumber;
 	}
 
 }
