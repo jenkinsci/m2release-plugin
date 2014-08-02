@@ -26,6 +26,10 @@
 		</select>
 	</f:entry>
 	
+	<f:entry title="Preselect 'Append Jenkins Build Number'" help="/plugin/m2release/help-projectConfig-selectAppendJenkinsBuildNumber.html">
+		<f:checkbox name="selectAppendJenkinsBuildNumber" checked="${h.defaulted(instance.selectAppendJenkinsBuildNumber,descriptor.DEFAULT_SELECT_APPEND_JENKINS_BUILD_NUMBER)}"/>
+	</f:entry>
+	
 	<f:entry title="Preselect 'Specify custom SCM comment prefix'" help="/plugin/m2release/help-projectConfig-selectCustomScmCommentPrefix.html">
 		<f:checkbox name="selectCustomScmCommentPrefix" checked="${h.defaulted(instance.selectCustomScmCommentPrefix,descriptor.DEFAULT_SELECT_CUSTOM_SCM_COMMENT_PREFIX)}"/>
 	</f:entry>

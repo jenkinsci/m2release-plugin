@@ -71,12 +71,14 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	private boolean selectCustomScmTag = false;
 	private boolean selectAppendHudsonUsername;
 	private boolean selectScmCredentials;
+	private boolean selectAppendJenkinsBuildNumber;
 
-	public M2ReleaseAction(MavenModuleSet project, boolean selectCustomScmCommentPrefix, boolean selectAppendHudsonUsername, boolean selectScmCredentials) {
+	public M2ReleaseAction(MavenModuleSet project, boolean selectCustomScmCommentPrefix, boolean selectAppendHudsonUsername, boolean selectScmCredentials, boolean selectAppendJenkinsBuildNumber) {
 		this.project = project;
 		this.selectCustomScmCommentPrefix = selectCustomScmCommentPrefix;
 		this.selectAppendHudsonUsername = selectAppendHudsonUsername;
 		this.selectScmCredentials = selectScmCredentials;
+		this.selectAppendJenkinsBuildNumber = selectAppendJenkinsBuildNumber;
 		if (getRootModule() == null) {
 			// if the root module is not available, the user should be informed
 			// about the stuff we are not able to compute
@@ -135,6 +137,14 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 
 	public boolean isSelectCustomScmTag() {
 		return selectCustomScmTag;
+	}
+
+	public boolean isSelectAppendJenkinsBuildNumber() {
+		return selectAppendJenkinsBuildNumber;
+	}
+
+	public void setSelectAppendJenkinsBuildNumber(boolean selectAppendJenkinsBuildNumber) {
+		this.selectAppendJenkinsBuildNumber = selectAppendJenkinsBuildNumber;
 	}
 
 	public Collection<MavenModule> getModules() {
@@ -207,6 +217,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		// good old http...
 		Map<?, ?> httpParams = req.getParameterMap();
 
+		final boolean appendJenkinsBuildNumber = httpParams.containsKey("appendJenkinsBuildNumber"); //$NON-NLS-1$
 		final boolean closeNexusStage = httpParams.containsKey("closeNexusStage"); //$NON-NLS-1$
 		final String repoDescription = closeNexusStage ? getString("repoDescription", httpParams) : ""; //$NON-NLS-1$
 		final boolean specifyScmCredentials = httpParams.containsKey("specifyScmCredentials"); //$NON-NLS-1$
@@ -282,6 +293,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		arguments.setScmCommentPrefix(scmCommentPrefix);
 		arguments.setAppendHusonUserName(appendHusonUserName);
 		arguments.setHudsonUserName(Hudson.getAuthentication().getName());
+		arguments.setAppendJenkinsBuildNumber(appendJenkinsBuildNumber);
 
 		
 		if (project.scheduleBuild(0, new ReleaseCause(), parameters, arguments)) {
