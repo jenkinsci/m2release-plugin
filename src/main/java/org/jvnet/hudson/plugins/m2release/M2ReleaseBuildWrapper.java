@@ -26,20 +26,8 @@ package org.jvnet.hudson.plugins.m2release;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.Util;
-import hudson.maven.AbstractMavenProject;
-import hudson.maven.MavenBuild;
-import hudson.maven.MavenModule;
-import hudson.maven.MavenModuleSet;
-import hudson.maven.MavenModuleSetBuild;
-import hudson.model.Action;
-import hudson.model.BuildListener;
-import hudson.model.Result;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.Descriptor;
-import hudson.model.Hudson;
-import hudson.model.Item;
-import hudson.model.Run;
+import hudson.maven.*;
+import hudson.model.*;
 import hudson.security.Permission;
 import hudson.security.PermissionGroup;
 import hudson.tasks.BuildWrapper;
@@ -47,20 +35,7 @@ import hudson.tasks.BuildWrapperDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import hudson.util.RunList;
-
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-
 import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.jvnet.hudson.plugins.m2release.nexus.Stage;
 import org.jvnet.hudson.plugins.m2release.nexus.StageClient;
@@ -71,6 +46,16 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Map;
 
 /**
  * Wraps a {@link MavenBuild} to be able to run the <a
@@ -465,6 +450,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		public static final String     DEFAULT_RELEASE_VERSION_ENVVAR = "MVN_RELEASE_VERSION"; //$NON-NLS-1$
 		public static final String     DEFAULT_DEV_VERSION_ENVVAR = "MVN_DEV_VERSION"; //$NON-NLS-1$
 		public static final String     DEFAULT_DRYRUN_ENVVAR = "MVN_ISDRYRUN"; //$NON-NLS-1$
+        public static final String     DEFAULT_SCM_TAG = "MVN_SCM_TAG"; //$NON-NLS-1$
 
 		public static final boolean    DEFAULT_SELECT_CUSTOM_SCM_COMMENT_PREFIX = false;
 		public static final boolean    DEFAULT_SELECT_APPEND_HUDSON_USERNAME    = false;
