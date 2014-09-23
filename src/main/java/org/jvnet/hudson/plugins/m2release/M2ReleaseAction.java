@@ -25,36 +25,20 @@ package org.jvnet.hudson.plugins.m2release;
 
 import hudson.maven.MavenModule;
 import hudson.maven.MavenModuleSet;
-import hudson.model.ParameterValue;
-import hudson.model.BooleanParameterValue;
-import hudson.model.Hudson;
-import hudson.model.ParameterDefinition;
-import hudson.model.ParametersAction;
-import hudson.model.ParametersDefinitionProperty;
-import hudson.model.PasswordParameterValue;
-import hudson.model.PermalinkProjectAction;
-import hudson.model.StringParameterValue;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.ServletException;
-
+import hudson.model.*;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.apache.maven.shared.release.versions.VersionParseException;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The action appears as the link in the side bar that users will click on in
@@ -263,6 +247,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		values.add(new StringParameterValue(M2ReleaseBuildWrapper.DescriptorImpl.DEFAULT_RELEASE_VERSION_ENVVAR, releaseVersion));
 		values.add(new StringParameterValue(M2ReleaseBuildWrapper.DescriptorImpl.DEFAULT_DEV_VERSION_ENVVAR, developmentVersion));
 		values.add(new BooleanParameterValue(M2ReleaseBuildWrapper.DescriptorImpl.DEFAULT_DRYRUN_ENVVAR, isDryRun));
+        values.add(new StringParameterValue(M2ReleaseBuildWrapper.DescriptorImpl.DEFAULT_SCM_TAG, scmTag));
 
 		// schedule release build
 		ParametersAction parameters = new ParametersAction(values);
