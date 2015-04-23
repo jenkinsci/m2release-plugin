@@ -48,5 +48,10 @@
 		<f:entry title="SCM password environment variable" help="/plugin/m2release/help-projectConfig-scmPasswordEnvVar.html">
 			<f:textbox field="scmPasswordEnvVar" value="${instance.scmPasswordEnvVar}"/>
 		</f:entry>
+		<f:optionalBlock name="customVersionNumber" inline="true" title="Enable custom version number format" checked="${h.defaulted(instance.customVersionNumber,descriptor.DEFAULT_SELECT_CUSTOM_VERSION_NUMBER)}" help="/plugin/m2release/help-projectConfig-customVersionNumber.html">
+			<f:entry title="Digit to increment" help="/plugin/m2release/help-projectConfig-customVersionNumberDigit.html">
+				<f:textbox field="customVersionNumberDigit" value="${h.defaulted(instance.customVersionNumberDigit,descriptor.DEFAULT_CUSTOM_VERSION_NUMBER_DIGIT)}" />
+			</f:entry>
+		</f:optionalBlock>
 	</f:advanced>
 </j:jelly>

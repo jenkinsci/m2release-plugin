@@ -44,6 +44,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 
@@ -59,7 +61,7 @@ import org.kohsuke.stapler.StaplerResponse;
 /**
  * The action appears as the link in the side bar that users will click on in
  * order to start the release process.
- * 
+ *
  * @author James Nord
  * @author Dominik Bartholdi
  * @version 0.3
@@ -179,13 +181,37 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		return sb.toString();
 	}
 
+
 	public String computeNextVersion() {
 		String version = "NaN-SNAPSHOT";
 		final MavenModule rootModule = getRootModule();
 		if (rootModule != null && StringUtils.isNotBlank(rootModule.getVersion())) {
 			try {
-				DefaultVersionInfo dvi = new DefaultVersionInfo(rootModule.getVersion());
-				version = dvi.getNextVersion().getSnapshotVersionString();
+				// if configured, do not rely on Maven for the next version
+				if(project.getBuildWrappersList().get(M2ReleaseBuildWrapper.class).isCustomVersionNumber()) {
+					version = rootModule.getVersion();
+					Integer digitToIncrement = Integer.parseInt(project.getBuildWrappersList().get(M2ReleaseBuildWrapper.class).getCustomVersionNumberDigit());
+					Pattern digitPattern = Pattern.compile("(\\d+)");
+					Matcher matcher = digitPattern.matcher(version);
+					StringBuffer result = new StringBuffer();
+					int groupNumber = 0;
+					while (matcher.find())
+					{
+						groupNumber++;
+						if(groupNumber == digitToIncrement) {
+							matcher.appendReplacement(result, String.valueOf(Integer.parseInt(matcher.group(1)) + 1));
+						}
+						else if(groupNumber > digitToIncrement) {
+							matcher.appendReplacement(result, "1");
+						}
+					}
+					matcher.appendTail(result);
+					version = result.toString();
+				}
+				else {
+					DefaultVersionInfo dvi = new DefaultVersionInfo(rootModule.getVersion());
+					version = dvi.getNextVersion().getSnapshotVersionString();
+				}
 			} catch (Exception vpEx) {
 				Logger logger = Logger.getLogger(this.getClass().getName());
 				logger.log(Level.WARNING, "Failed to compute next version.", vpEx);
@@ -283,7 +309,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		arguments.setAppendHusonUserName(appendHusonUserName);
 		arguments.setHudsonUserName(Hudson.getAuthentication().getName());
 
-		
+
 		if (project.scheduleBuild(0, new ReleaseCause(), parameters, arguments)) {
 			resp.sendRedirect(req.getContextPath() + '/' + project.getUrl());
 		} else {
@@ -309,7 +335,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	/**
 	 * returns the value of the key as a String. if multiple values have been
 	 * submitted, the first one will be returned.
-	 * 
+	 *
 	 * @param key
 	 * @param httpParams
 	 * @return
@@ -321,7 +347,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	/**
 	 * Enforces that the developer version is actually a developer version and
 	 * ends with "-SNAPSHOT".
-	 * 
+	 *
 	 * @throws IllegalArgumentException
 	 *             if the version does not end with "-SNAPSHOT"
 	 */

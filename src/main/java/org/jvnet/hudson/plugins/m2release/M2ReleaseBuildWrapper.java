@@ -76,21 +76,21 @@ import org.slf4j.LoggerFactory;
  * Wraps a {@link MavenBuild} to be able to run the <a
  * href="http://maven.apache.org/plugins/maven-release-plugin/">maven release plugin</a> on demand, with the
  * ability to auto close a Nexus Pro Staging Repo
- * 
+ *
  * @author James Nord
  * @author Dominik Bartholdi
  * @version 0.3
  * @since 0.1
  */
 public class M2ReleaseBuildWrapper extends BuildWrapper {
-	
-	
+
+
 	private transient Logger log = LoggerFactory.getLogger(M2ReleaseBuildWrapper.class);
-	
+
 	/** For backwards compatibility with older configurations. @deprecated */
 	@Deprecated
 	public transient boolean              defaultVersioningMode;
-	
+
 	private String                        scmUserEnvVar                = "";
 	private String                        scmPasswordEnvVar            = "";
 	private String                        releaseEnvVar                = DescriptorImpl.DEFAULT_RELEASE_ENVVAR;
@@ -99,11 +99,14 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	public boolean                        selectCustomScmCommentPrefix = DescriptorImpl.DEFAULT_SELECT_CUSTOM_SCM_COMMENT_PREFIX;
 	public boolean                        selectAppendHudsonUsername   = DescriptorImpl.DEFAULT_SELECT_APPEND_HUDSON_USERNAME;
 	public boolean                        selectScmCredentials         = DescriptorImpl.DEFAULT_SELECT_SCM_CREDENTIALS;
-	
+
 	public int                            numberOfReleaseBuildsToKeep  = DescriptorImpl.DEFAULT_NUMBER_OF_RELEASE_BUILDS_TO_KEEP;
-	
+
+	private boolean 					  customVersionNumber = DescriptorImpl.DEFAULT_SELECT_CUSTOM_VERSION_NUMBER;
+	private String 					      customVersionNumberDigit = DescriptorImpl.DEFAULT_CUSTOM_VERSION_NUMBER_DIGIT;
+
 	@DataBoundConstructor
-	public M2ReleaseBuildWrapper(String releaseGoals, String dryRunGoals, boolean selectCustomScmCommentPrefix, boolean selectAppendHudsonUsername, boolean selectScmCredentials, String releaseEnvVar, String scmUserEnvVar, String scmPasswordEnvVar, int numberOfReleaseBuildsToKeep) {
+	public M2ReleaseBuildWrapper(String releaseGoals, String dryRunGoals, boolean selectCustomScmCommentPrefix, boolean selectAppendHudsonUsername, boolean selectScmCredentials, String releaseEnvVar, String scmUserEnvVar, String scmPasswordEnvVar, int numberOfReleaseBuildsToKeep, boolean customVersionNumber, String customVersionNumberDigit) {
 		super();
 		this.releaseGoals = releaseGoals;
 		this.dryRunGoals = dryRunGoals;
@@ -114,13 +117,15 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		this.scmUserEnvVar = scmUserEnvVar;
 		this.scmPasswordEnvVar = scmPasswordEnvVar;
 		this.numberOfReleaseBuildsToKeep = numberOfReleaseBuildsToKeep;
+		this.customVersionNumber = customVersionNumber;
+		this.customVersionNumberDigit = customVersionNumberDigit;
 	}
 
 
 	@Override
 	public Environment setUp(@SuppressWarnings("rawtypes") AbstractBuild build, Launcher launcher, final BuildListener listener)
-	                                                                                              throws IOException,
-	                                                                                              InterruptedException {
+			throws IOException,
+			InterruptedException {
 
 		if (!isReleaseBuild(build)) {
 			// we are not performing a release so don't need a custom tearDown.
@@ -135,7 +140,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 				}
 			};
 		}
-		
+
 		// we are a release build
 		M2ReleaseArgumentsAction args = build.getAction(M2ReleaseArgumentsAction.class);
 		StringBuilder buildGoals = new StringBuilder();
@@ -184,7 +189,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 			public boolean tearDown(@SuppressWarnings("rawtypes") AbstractBuild bld, BuildListener lstnr)
 					throws IOException, InterruptedException {
 				boolean retVal = true;
-				
+
 				final MavenModuleSet mmSet = getModuleSet(bld);
 				M2ReleaseArgumentsAction args = bld.getAction(M2ReleaseArgumentsAction.class);
 				if (args.isCloseNexusStage() && !args.isDryRun()) {
@@ -219,7 +224,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 						retVal = false;
 					}
 				}
-				
+
 				if (args.isDryRun()) {
 					lstnr.getLogger().println("[M2Release] its only a dryRun, no need to mark it for keep");
 				}
@@ -277,7 +282,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 				}
 				return false;
 			}
-			
+
 			private boolean shouldKeepBuildNumber(int numToKeep, int numKept) {
 				if (numToKeep == -1) {
 					return true;
@@ -287,7 +292,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		};
 	}
 
-	
+
 	public boolean isSelectCustomScmCommentPrefix() {
 		return selectCustomScmCommentPrefix;
 	}
@@ -303,13 +308,29 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	public void setSelectAppendHudsonUsername(boolean selectAppendHudsonUsername) {
 		this.selectAppendHudsonUsername = selectAppendHudsonUsername;
 	}
-	
+
 	public int getNumberOfReleaseBuildsToKeep() {
 		return numberOfReleaseBuildsToKeep;
 	}
-	
+
 	public void setNumberOfReleaseBuildsToKeep(int numberOfReleaseBuildsToKeep) {
 		this.numberOfReleaseBuildsToKeep = numberOfReleaseBuildsToKeep;
+	}
+
+	public boolean isCustomVersionNumber() {
+		return customVersionNumber;
+	}
+
+	public void setCustomVersionNumber(boolean customVersionNumber) {
+		this.customVersionNumber = customVersionNumber;
+	}
+
+	public String getCustomVersionNumberDigit() {
+		return customVersionNumberDigit;
+	}
+
+	public void setCustomVersionNumberDigit(String customVersionNumberDigit) {
+		this.customVersionNumberDigit = customVersionNumberDigit;
 	}
 
 	private MavenModuleSet getModuleSet(AbstractBuild<?,?> build) {
@@ -346,19 +367,19 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	public String getScmUserEnvVar() {
 		return scmUserEnvVar;
 	}
-	
+
 	public String getScmPasswordEnvVar() {
 		return scmPasswordEnvVar;
 	}
-	
+
 	public String getReleaseGoals() {
 		return StringUtils.isBlank(releaseGoals) ? DescriptorImpl.DEFAULT_RELEASE_GOALS : releaseGoals;
 	}
-	
+
 	public String getDryRunGoals() {
 		return StringUtils.isBlank(dryRunGoals) ? DescriptorImpl.DEFAULT_DRYRUN_GOALS : dryRunGoals;
 	}
-	
+
 
 	/**
 	 * Evaluate if the current build should be a release build.
@@ -394,7 +415,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 
 	@Extension
 	public static class DescriptorImpl extends BuildWrapperDescriptor {
-		
+
 		public static final Permission CREATE_RELEASE;
 
 		static {
@@ -409,20 +430,20 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 				Array.set(psArr, 0, f.get(null));
 				f = permissionScopeClass.getDeclaredField("ITEM");
 				Array.set(psArr, 1, f.get(null));
-				
-				Constructor<Permission> ctor = Permission.class.getConstructor(PermissionGroup.class, 
-						String.class, 
-						Localizable.class, 
-						Permission.class, 
+
+				Constructor<Permission> ctor = Permission.class.getConstructor(PermissionGroup.class,
+						String.class,
+						Localizable.class,
+						Permission.class,
 //						boolean.class,
 						permissionScopeClass);
-						//permissionScopes.getClass());
-				tmpPerm = ctor.newInstance(Item.PERMISSIONS, 
-				                           "Release",
-				                            Messages._CreateReleasePermission_Description(),
-				                            Hudson.ADMINISTER,
+				//permissionScopes.getClass());
+				tmpPerm = ctor.newInstance(Item.PERMISSIONS,
+						"Release",
+						Messages._CreateReleasePermission_Description(),
+						Hudson.ADMINISTER,
 //				                            true,
-				                            f.get(null));
+						f.get(null));
 				LoggerFactory.getLogger(M2ReleaseBuildWrapper.class).info("Using new style Permission with PermissionScope");
 
 			}
@@ -452,9 +473,9 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 			if (tmpPerm == null) {
 				LoggerFactory.getLogger(M2ReleaseBuildWrapper.class).warn("Using Legacy Permission as new style permission with PermissionScope failed");
 				tmpPerm = new Permission(Item.PERMISSIONS,
-				                         "Release", //$NON-NLS-1$
-				                          Messages._CreateReleasePermission_Description(),
-				                          Hudson.ADMINISTER);
+						"Release", //$NON-NLS-1$
+						Messages._CreateReleasePermission_Description(),
+						Hudson.ADMINISTER);
 			}
 			CREATE_RELEASE = tmpPerm;
 		}
@@ -472,11 +493,14 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 
 		public static final int        DEFAULT_NUMBER_OF_RELEASE_BUILDS_TO_KEEP = 1;
 
+		public static final boolean    DEFAULT_SELECT_CUSTOM_VERSION_NUMBER = false;
+		public static final String	   DEFAULT_CUSTOM_VERSION_NUMBER_DIGIT = "4";
+
 		private boolean nexusSupport  = false;
 		private String  nexusURL      = null;
 		private String  nexusUser     = "deployment";                                    //$NON-NLS-1$
 		private String  nexusPassword = "deployment123";                                 //$NON-NLS-1$
-		
+
 
 
 		public DescriptorImpl() {
@@ -537,16 +561,16 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		/**
 		 * Checks if the Nexus URL exists and we can authenticate against it.
 		 */
-		public FormValidation doUrlCheck(@QueryParameter String urlValue, 
-		                                 final @QueryParameter String usernameValue,
-		                                 final @QueryParameter String passwordValue) throws IOException,
-		                                                                      ServletException {
+		public FormValidation doUrlCheck(@QueryParameter String urlValue,
+										 final @QueryParameter String usernameValue,
+										 final @QueryParameter String passwordValue) throws IOException,
+				ServletException {
 			// this method can be used to check if a file exists anywhere in the file system,
 			// so it should be protected.
 			if (!Hudson.getInstance().hasPermission(Hudson.ADMINISTER)) {
 				return FormValidation.ok();
 			}
-			
+
 			urlValue = Util.fixEmptyAndTrim(urlValue);
 			if (urlValue == null) {
 				return FormValidation.ok();
@@ -573,7 +597,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 			catch (StageException ex) {
 				FormValidation stageError = FormValidation.error(ex.getMessage());
 				stageError.initCause(ex);
-				return stageError; 
+				return stageError;
 			}
 			return FormValidation.ok();
 		}

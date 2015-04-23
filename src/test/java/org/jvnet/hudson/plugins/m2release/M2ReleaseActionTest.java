@@ -60,13 +60,14 @@ public class M2ReleaseActionTest extends HudsonTestCase {
 		m.setGoals("dummygoal"); // build would fail with this goal
 
 		final M2ReleaseBuildWrapper wrapper = new M2ReleaseBuildWrapper(DescriptorImpl.DEFAULT_RELEASE_GOALS, DescriptorImpl.DEFAULT_DRYRUN_GOALS, false,
-				false, false, "ENV", "USERENV", "PWDENV", DescriptorImpl.DEFAULT_NUMBER_OF_RELEASE_BUILDS_TO_KEEP);
+				false, false, "ENV", "USERENV", "PWDENV", DescriptorImpl.DEFAULT_NUMBER_OF_RELEASE_BUILDS_TO_KEEP,
+				DescriptorImpl.DEFAULT_SELECT_CUSTOM_VERSION_NUMBER, DescriptorImpl.DEFAULT_CUSTOM_VERSION_NUMBER_DIGIT);
 		M2ReleaseArgumentsAction args = new M2ReleaseArgumentsAction();
 		args.setDevelopmentVersion("1.0-SNAPSHOT");
 		args.setReleaseVersion("0.9");
 		args.setDryRun(true);
 		m.getBuildWrappersList().add(wrapper);
-		
+
 		return assertBuildStatusSuccess(m.scheduleBuild2(0, new ReleaseCause(), args));
 	}
 

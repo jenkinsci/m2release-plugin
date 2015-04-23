@@ -66,24 +66,24 @@ public class M2ReleaseBadgeActionTest extends HudsonTestCase {
 				runDryRunReleaseWithFailingPostStep("maven3-failing-project.zip", "pom.xml", mavenInstallation, Result.FAILURE);
 		M2ReleaseBadgeAction badge = build.getAction(M2ReleaseBadgeAction.class);
 		assertTrue("Badge should have been marked as failed release", badge.isFailedBuild());
-        assertEquals("1.0", badge.getVersionNumber());
+		assertEquals("1.0", badge.getVersionNumber());
 	}
 
 	private MavenModuleSetBuild runDryRunRelease(String projectZip, String unpackedPom,
-					MavenInstallation mavenInstallation, Result expectedResult)
+												 MavenInstallation mavenInstallation, Result expectedResult)
 			throws Exception {
 		return runDryRunRelease(projectZip, unpackedPom, mavenInstallation, expectedResult, null);
 	}
 
 	private MavenModuleSetBuild runDryRunReleaseWithFailingPostStep(String projectZip, String unpackedPom,
-					MavenInstallation mavenInstallation, Result expectedResult)
+																	MavenInstallation mavenInstallation, Result expectedResult)
 			throws Exception {
 		Builder failingPostStep = new FailingBuilder();
 		return runDryRunRelease(projectZip, unpackedPom, mavenInstallation, expectedResult, failingPostStep);
 	}
 
 	private MavenModuleSetBuild runDryRunRelease(String projectZip, String unpackedPom,
-					MavenInstallation mavenInstallation, Result expectedResult, Builder postStepBuilder)
+												 MavenInstallation mavenInstallation, Result expectedResult, Builder postStepBuilder)
 			throws Exception {
 		MavenModuleSet m = createMavenProject();
 		m.setRootPOM(unpackedPom);
@@ -94,20 +94,21 @@ public class M2ReleaseBadgeActionTest extends HudsonTestCase {
 		final M2ReleaseBuildWrapper wrapper =
 				new M2ReleaseBuildWrapper(DescriptorImpl.DEFAULT_RELEASE_GOALS, DescriptorImpl.DEFAULT_DRYRUN_GOALS,
 						false, false, false, "ENV", "USERENV", "PWDENV",
-						DescriptorImpl.DEFAULT_NUMBER_OF_RELEASE_BUILDS_TO_KEEP);
+						DescriptorImpl.DEFAULT_NUMBER_OF_RELEASE_BUILDS_TO_KEEP,
+						DescriptorImpl.DEFAULT_SELECT_CUSTOM_VERSION_NUMBER, DescriptorImpl.DEFAULT_CUSTOM_VERSION_NUMBER_DIGIT);
 		M2ReleaseArgumentsAction args = new M2ReleaseArgumentsAction();
 		args.setReleaseVersion("1.0");
 		args.setDevelopmentVersion("1.1-SNAPSHOT");
 		args.setDryRun(true);
 		m.getBuildWrappersList().add(wrapper);
-		
+
 		if (postStepBuilder != null) {
 			m.getPostbuilders().add(postStepBuilder);
 		}
-		
+
 		return assertBuildStatus(expectedResult, m.scheduleBuild2(0, new ReleaseCause(), args).get());
 	}
-	
+
 	private static class FailingBuilder extends Builder {
 		@Override
 		public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
