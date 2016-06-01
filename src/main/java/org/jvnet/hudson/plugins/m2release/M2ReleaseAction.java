@@ -39,9 +39,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -250,21 +252,24 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 			}
 		}
 
+		Set<String> safeParams = new HashSet<String>();
 		// if configured, expose the SCM credentails as additional parameters
 		if (StringUtils.isNotBlank(m2Wrapper.getScmPasswordEnvVar())) {
 			String scmPasswordVal = StringUtils.isEmpty(scmPassword) ? "" : scmPassword;
 			values.add(new PasswordParameterValue(m2Wrapper.getScmPasswordEnvVar(), scmPasswordVal));
+			safeParams.add(m2Wrapper.getScmPasswordEnvVar());
 		}
 		if (StringUtils.isNotBlank(m2Wrapper.getScmUserEnvVar())) {
 			String scmUsernameVal = StringUtils.isEmpty(scmUsername) ? "" : scmUsername;
 			values.add(new StringParameterValue(m2Wrapper.getScmUserEnvVar(), scmUsernameVal));
+			safeParams.add(m2Wrapper.getScmUserEnvVar());
 		}
 		values.add(new StringParameterValue(M2ReleaseBuildWrapper.DescriptorImpl.DEFAULT_RELEASE_VERSION_ENVVAR, releaseVersion));
 		values.add(new StringParameterValue(M2ReleaseBuildWrapper.DescriptorImpl.DEFAULT_DEV_VERSION_ENVVAR, developmentVersion));
 		values.add(new BooleanParameterValue(M2ReleaseBuildWrapper.DescriptorImpl.DEFAULT_DRYRUN_ENVVAR, isDryRun));
 
 		// schedule release build
-		ParametersAction parameters = new ParametersAction(values);
+		ParametersAction parameters = new ParametersAction(values, safeParams);
 
 		M2ReleaseArgumentsAction arguments = new M2ReleaseArgumentsAction();
 		arguments.setDryRun(isDryRun);
