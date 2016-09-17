@@ -1,9 +1,9 @@
 #!/usr/bin/env groovy
 
 String mavenCommand = 'mvn clean install -Dmaven.test.failure.ignore=true'
-String testReports ='**/target/surefire-reports/**/*.xml'
+String testReports = '**/target/surefire-reports/**/*.xml'
 
-Map platforms = []
+Map platforms = [:]
 
 platforms['windows'] = {
     node('windows') {
