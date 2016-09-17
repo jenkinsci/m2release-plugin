@@ -1,8 +1,11 @@
 #!/usr/bin/env groovy
 
 String mavenCommand = 'mvn clean install -Dmaven.test.failure.ignore=true'
+String testReports ='**/target/surefire-reports/**/*.xml'
 
-stage('Windows') {
+Map platforms = []
+
+platforms['windows'] = {
     node('windows') {
         checkout scm
         withEnv([
@@ -11,11 +14,11 @@ stage('Windows') {
         ]) {
             bat mavenCommand
         }
-        junit '**/target/surefire-reports/**/*.xml'
+        junit testReports
     }
 }
 
-stage('Linux') {
+platforms['linux'] = {
     node('linux') {
         checkout scm
         withEnv([
@@ -24,6 +27,8 @@ stage('Linux') {
         ]) {
             sh mavenCommand
         }
-        junit '**/target/surefire-reports/**/*.xml'
+        junit testReports
     }
 }
+
+parallel(platforms)
