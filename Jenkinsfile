@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
 
 node('windows') {
+    checkout scm
     withEnv([
         "JAVA_HOME=${tool 'jdk7'}",
         "PATH+MAVEN=${tool 'mvn'}/bin",
