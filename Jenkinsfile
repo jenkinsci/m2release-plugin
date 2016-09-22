@@ -1,34 +1,7 @@
 #!/usr/bin/env groovy
 
-String mavenCommand = 'mvn clean install -Dmaven.test.failure.ignore=true'
-String testReports = '**/target/surefire-reports/**/*.xml'
 
-Map platforms = [:]
+/* `buildPlugin` step provided by: https://github.com/jenkins-infra/pipeline-library */
 
-platforms['windows'] = {
-    node('windows') {
-        checkout scm
-        withEnv([
-            "JAVA_HOME=${tool 'jdk7'}",
-            "PATH+MAVEN=${tool 'mvn'}/bin",
-        ]) {
-            bat mavenCommand
-        }
-        junit testReports
-    }
-}
-
-platforms['linux'] = {
-    node('linux') {
-        checkout scm
-        withEnv([
-            "JAVA_HOME=${tool 'jdk7'}",
-            "PATH+MAVEN=${tool 'mvn'}/bin",
-        ]) {
-            sh mavenCommand
-        }
-        junit testReports
-    }
-}
-
-parallel(platforms)
+buildPlugin jdk: '7'
+buildPlugin jdk: '8'
