@@ -1,0 +1,8 @@
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+    <f:entry title="${%Select Maven Release Job}" field="jobName">
+        <f:combobox/>
+    </f:entry>
+    <f:entry title="${%Inject variables to the release}" description="Variables should be in KEY=VALUE style." field="envVars">
+        <f:textarea />
+    </f:entry>
+</j:jelly>
