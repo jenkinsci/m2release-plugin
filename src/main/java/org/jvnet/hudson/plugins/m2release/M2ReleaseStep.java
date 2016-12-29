@@ -15,7 +15,7 @@ import hudson.model.TopLevelItem;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.Builder;
-import hudson.util.ComboBoxModel;
+import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -42,7 +42,8 @@ public class M2ReleaseStep extends Builder {
 
     @Override
     public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-      return true;
+      //prevents builds from endless loop
+      return !MavenModuleSet.class.isAssignableFrom(jobType);
     }
 
     @Override
@@ -50,8 +51,8 @@ public class M2ReleaseStep extends Builder {
       return "Perform Maven Release";
     }
 
-    public ComboBoxModel doFillJobNameItems(@QueryParameter String jobName) {
-      final ComboBoxModel items = new ComboBoxModel();
+    public ListBoxModel doFillJobNameItems(@QueryParameter String jobName) {
+      final ListBoxModel items = new ListBoxModel();
 
       for (final MavenModuleSet item : Jenkins.getInstance().getAllItems(MavenModuleSet.class)) {
         for (final BuildWrapper buildWrapper : item.getBuildWrappersList()) {

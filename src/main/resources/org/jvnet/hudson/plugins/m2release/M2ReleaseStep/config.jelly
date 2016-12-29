@@ -1,6 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
     <f:entry title="${%Select Maven Release Job}" field="jobName">
-        <f:combobox/>
+        <f:select />
     </f:entry>
     <f:entry title="${%Inject additional variables}" field="injectParameters" description="Variables should be in KEY=VALUE style.">
         <f:textarea/>
