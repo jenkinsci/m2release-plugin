@@ -25,16 +25,23 @@ package org.jvnet.hudson.plugins.m2release;
 
 import hudson.maven.MavenModule;
 import hudson.maven.MavenModuleSet;
-import hudson.model.ParameterValue;
 import hudson.model.BooleanParameterValue;
 import hudson.model.Hudson;
 import hudson.model.ParameterDefinition;
+import hudson.model.ParameterValue;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.PasswordParameterValue;
 import hudson.model.PermalinkProjectAction;
 import hudson.model.StringParameterValue;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang.StringUtils;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
+import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,18 +51,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.servlet.ServletException;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.shared.release.versions.DefaultVersionInfo;
-import org.apache.maven.shared.release.versions.VersionParseException;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * The action appears as the link in the side bar that users will click on in
@@ -147,50 +142,19 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	}
 
 	public String computeReleaseVersion() {
-		String version = "NaN";
-		final MavenModule rootModule = getRootModule();
-		if (rootModule != null && StringUtils.isNotBlank(rootModule.getVersion())) {
-			try {
-				DefaultVersionInfo dvi = new DefaultVersionInfo(rootModule.getVersion());
-				version = dvi.getReleaseVersionString();
-			} catch (VersionParseException vpEx) {
-				LOGGER.log(Level.WARNING, "Failed to compute next version.", vpEx);
-				version = rootModule.getVersion().replace("-SNAPSHOT", "");
-			}
-		}
-		return version;
+		return M2ReleaseInfoProvider.computeReleaseVersion(getRootModule());
 	}
 
 	public String computeRepoDescription() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(project.getRootModule().getName());
-		sb.append(':');
-		sb.append(computeReleaseVersion());
-		return sb.toString();
+		return M2ReleaseInfoProvider.computeRepoDescription(getRootModule());
 	}
 
 	public String computeScmTag() {
-		// maven default is artifact-version
-		String artifactId = getRootModule() == null ? "M2RELEASE-TAG" : getRootModule().getModuleName().artifactId;
-		StringBuilder sb = new StringBuilder();
-		sb.append(artifactId);
-		sb.append('-');
-		sb.append(computeReleaseVersion());
-		return sb.toString();
+		return M2ReleaseInfoProvider.computeScmTag(getRootModule());
 	}
 
 	public String computeNextVersion() {
-		String version = "NaN-SNAPSHOT";
-		final MavenModule rootModule = getRootModule();
-		if (rootModule != null && StringUtils.isNotBlank(rootModule.getVersion())) {
-			try {
-				DefaultVersionInfo dvi = new DefaultVersionInfo(rootModule.getVersion());
-				version = dvi.getNextVersion().getSnapshotVersionString();
-			} catch (Exception vpEx) {
-				LOGGER.log(Level.WARNING, "Failed to compute next version.", vpEx);
-			}
-		}
-		return version;
+		return M2ReleaseInfoProvider.computeNextVersion(getRootModule());
 	}
 
 	public boolean isNexusSupportEnabled() {
@@ -282,7 +246,6 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		arguments.setAppendHusonUserName(appendHusonUserName);
 		arguments.setHudsonUserName(Hudson.getAuthentication().getName());
 
-		
 		if (project.scheduleBuild(0, new ReleaseCause(), parameters, arguments)) {
 			resp.sendRedirect(req.getContextPath() + '/' + project.getUrl());
 		} else {
