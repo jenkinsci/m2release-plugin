@@ -1,5 +1,6 @@
 package org.jvnet.hudson.plugins.m2release;
 
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.maven.MavenModuleSet;
@@ -10,6 +11,7 @@ import hudson.model.BuildListener;
 import hudson.model.Hudson;
 import hudson.model.ParameterValue;
 import hudson.model.ParametersAction;
+import hudson.model.Result;
 import hudson.model.StringParameterValue;
 import hudson.model.TopLevelItem;
 import hudson.tasks.BuildStepDescriptor;
@@ -23,6 +25,7 @@ import org.kohsuke.stapler.QueryParameter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Enables scheduling release as build step in every type of build.
@@ -108,21 +111,26 @@ public class M2ReleaseStep extends Builder {
     values.add(new StringParameterValue(M2ReleaseBuildWrapper.DescriptorImpl.DEFAULT_DEV_VERSION_ENVVAR, developmentVersion));
     values.add(new BooleanParameterValue(M2ReleaseBuildWrapper.DescriptorImpl.DEFAULT_DRYRUN_ENVVAR, false));
 
-    this.injectVariables(values, this.injectParameters);
+    final EnvVars environment = build.getEnvironment(listener);
+    this.injectVariables(environment, values, this.injectParameters);
 
     final ParametersAction parameters = new ParametersAction(values);
 
-    return project.scheduleBuild2(0, new ReleaseCause(), parameters, arguments).isDone();
+    try {
+      return project.scheduleBuild2(0, new ReleaseCause(), parameters, arguments).get().getResult().isBetterOrEqualTo(Result.SUCCESS);
+    } catch (ExecutionException e) {
+      throw new InterruptedException("Something went wrong while triggering Maven Release on project" + jobName);
+    }
   }
 
-  private void injectVariables(List<ParameterValue> values, String variables) {
+  private void injectVariables(EnvVars envVars, List<ParameterValue> values, String variables) {
     if (variables != null && !variables.trim().isEmpty()) {
       variables = this.fixCrLf(variables);
       final String[] varsByLine = variables.split("\n");
       for (String line : varsByLine) {
         final String[] keyValue = line.split("=");
         if(keyValue.length == 2){
-          values.add(new StringParameterValue(keyValue[0], keyValue[1]));
+          values.add(new StringParameterValue(keyValue[0], envVars.expand(keyValue[1])));
         }
       }
     }
