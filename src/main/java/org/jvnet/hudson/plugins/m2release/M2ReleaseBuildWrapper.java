@@ -365,7 +365,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	 * @return <code>true</code> if this build is a release build.
 	 */
 	private boolean isReleaseBuild(@SuppressWarnings("rawtypes") AbstractBuild build) {
-		return (build.getCause(ReleaseCause.class) != null);
+		return build.getCause(ReleaseCause.class) != null;
 	}
 
 
