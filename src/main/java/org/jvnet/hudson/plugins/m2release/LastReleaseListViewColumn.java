@@ -43,6 +43,8 @@ public class LastReleaseListViewColumn extends ListViewColumn {
 
     /**
      * Finds the last release information of the given project.
+     * @param project ref to the maven project
+     * @return release information
      */
     public Info getLastReleaseInfoOf(AbstractMavenProject<?,?> project) {
         Run<?,?> r = LastReleasePermalink.INSTANCE.resolve(project);

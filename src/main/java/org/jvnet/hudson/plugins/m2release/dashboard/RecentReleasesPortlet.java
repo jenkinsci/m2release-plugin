@@ -46,7 +46,7 @@ public class RecentReleasesPortlet extends DashboardPortlet {
      * Get the release version from this run
      *
      * @param run Must be a release run - i.e. have a ReleaseBuildBadgeAction
-     * @return
+     * @return result of <code>{@link M2ReleaseBadgeAction#getVersionNumber()}</code>
      */
     public String getReleaseVersion(Run run) {
         M2ReleaseBadgeAction rbb = run.getAction(M2ReleaseBadgeAction.class);

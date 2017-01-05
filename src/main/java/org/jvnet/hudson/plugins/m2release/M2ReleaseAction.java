@@ -295,6 +295,8 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 
 	/**
 	 * Gets the {@link ParameterDefinition} of the given name, if any.
+	 * @param name param's name
+	 * @return parameter definition
 	 */
 	public ParameterDefinition getParameterDefinition(String name) {
 		for (ParameterDefinition pd : getParameterDefinitions()) {
