@@ -38,6 +38,9 @@ import org.jvnet.hudson.plugins.m2release.M2ReleaseBuildWrapper.DescriptorImpl;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
 
+import static org.jvnet.hudson.test.ToolInstallations.configureDefaultMaven;
+import static org.jvnet.hudson.test.ToolInstallations.configureMaven3;
+
 public class M2ReleaseBadgeActionTest extends HudsonTestCase {
 
 	public void testBadgeForSuccessfulDryRunRelease() throws Exception {
@@ -115,4 +118,9 @@ public class M2ReleaseBadgeActionTest extends HudsonTestCase {
 			return false; // failing build
 		}
 	}
+
+        protected MavenModuleSet createMavenProject() throws IOException {
+                return jenkins.createProject(MavenModuleSet.class, createUniqueProjectName());
+        }
 }
+
