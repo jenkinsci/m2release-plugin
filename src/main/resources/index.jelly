@@ -3,6 +3,7 @@
 
   Since we don't really have anything dynamic here, let's just use static HTML. 
 -->
+<?jelly escape-by-default='true'?>
 <div>
   A plug-in that enables you to perform releases using the <a href="http://maven.apache.org/plugins/maven-release-plugin/">maven-release-plugin</a> from Jenkins.
 </div>

@@ -23,6 +23,12 @@
  */
 package org.jvnet.hudson.plugins.m2release;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
+import static org.jvnet.hudson.test.ToolInstallations.configureDefaultMaven;
+import static org.jvnet.hudson.test.ToolInstallations.configureMaven3;
+
 import java.io.IOException;
 
 import hudson.Launcher;
@@ -34,12 +40,16 @@ import hudson.model.AbstractBuild;
 import hudson.tasks.Builder;
 import hudson.tasks.Maven.MavenInstallation;
 
+import org.junit.Rule;
+import org.junit.Test;
 import org.jvnet.hudson.plugins.m2release.M2ReleaseBuildWrapper.DescriptorImpl;
 import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.JenkinsRule;
 
-public class M2ReleaseBadgeActionTest extends HudsonTestCase {
+public class M2ReleaseBadgeActionTest {
+	@Rule public JenkinsRule j = new JenkinsRule();
 
+	@Test
 	public void testBadgeForSuccessfulDryRunRelease() throws Exception {
 		MavenInstallation mavenInstallation = configureDefaultMaven();
 		final MavenModuleSetBuild build =
@@ -50,6 +60,7 @@ public class M2ReleaseBadgeActionTest extends HudsonTestCase {
 		assertEquals("1.0", badge.getVersionNumber());
 	}
 
+	@Test
 	public void testBadgeForFailedDryRunRelease() throws Exception {
 		MavenInstallation mavenInstallation = configureMaven3();
 		final MavenModuleSetBuild build =
@@ -60,6 +71,7 @@ public class M2ReleaseBadgeActionTest extends HudsonTestCase {
 		assertEquals("1.0", badge.getVersionNumber());
 	}
 
+	@Test
 	public void testBadgeForFailedPostBuildStepRelease() throws Exception {
 		MavenInstallation mavenInstallation = configureMaven3();
 		final MavenModuleSetBuild build =
@@ -85,7 +97,7 @@ public class M2ReleaseBadgeActionTest extends HudsonTestCase {
 	private MavenModuleSetBuild runDryRunRelease(String projectZip, String unpackedPom,
 					MavenInstallation mavenInstallation, Result expectedResult, Builder postStepBuilder)
 			throws Exception {
-		MavenModuleSet m = createMavenProject();
+		MavenModuleSet m = j.createProject(MavenModuleSet.class);
 		m.setRootPOM(unpackedPom);
 		m.setMaven(mavenInstallation.getName());
 		m.setScm(new ExtractResourceSCM(getClass().getResource(projectZip)));
@@ -105,7 +117,7 @@ public class M2ReleaseBadgeActionTest extends HudsonTestCase {
 			m.getPostbuilders().add(postStepBuilder);
 		}
 		
-		return assertBuildStatus(expectedResult, m.scheduleBuild2(0, new ReleaseCause(), args).get());
+		return j.assertBuildStatus(expectedResult, m.scheduleBuild2(0, new ReleaseCause(), args).get());
 	}
 	
 	private static class FailingBuilder extends Builder {

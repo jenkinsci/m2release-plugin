@@ -98,6 +98,7 @@ public class M2ReleaseBadgeAction implements BuildBadgeAction, RunAction2 {
 
 	/**
 	 * Gets the tooltip text that should be displayed to the user.
+	 * @return release description, e.g. "Release (dryRun) - 1.2.3"
 	 */
 	public String getTooltipText() {
 		StringBuilder str = new StringBuilder();
@@ -118,6 +119,8 @@ public class M2ReleaseBadgeAction implements BuildBadgeAction, RunAction2 {
 
 	/**
 	 * Gets the version number that was released.
+	 *
+	 * @return null if version can't be obtained
 	 */
 	public String getVersionNumber() {
 		if (versionNumber != null) {
@@ -132,7 +135,7 @@ public class M2ReleaseBadgeAction implements BuildBadgeAction, RunAction2 {
 	}
 
 	/**
-	 * Returns if the release was a dryRun or not.
+	 * @return whether the release was a dryRun or not.
 	 */
 	public boolean isDryRun() {
 		if (isDryRun != null) {
@@ -147,7 +150,7 @@ public class M2ReleaseBadgeAction implements BuildBadgeAction, RunAction2 {
 	}
 
 	/**
-	 * Returns <code>true</code> if the release build job failed.
+	 * @return <code>true</code> if the release build job failed.
 	 */
 	public boolean isFailedBuild() {
 		return !isSuccessfulBuild(run);

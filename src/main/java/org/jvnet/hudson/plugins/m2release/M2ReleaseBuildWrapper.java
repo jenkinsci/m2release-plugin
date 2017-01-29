@@ -365,7 +365,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	 * @return <code>true</code> if this build is a release build.
 	 */
 	private boolean isReleaseBuild(@SuppressWarnings("rawtypes") AbstractBuild build) {
-		return (build.getCause(ReleaseCause.class) != null);
+		return build.getCause(ReleaseCause.class) != null;
 	}
 
 
@@ -536,6 +536,13 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 
 		/**
 		 * Checks if the Nexus URL exists and we can authenticate against it.
+		 *
+		 * @param urlValue nexus url
+		 * @param usernameValue auth login
+		 * @param passwordValue auth pass
+		 * @throws IOException not used
+		 * @throws ServletException not used
+		 * @return server's response as <code>{@link FormValidation}</code>
 		 */
 		public FormValidation doUrlCheck(@QueryParameter String urlValue, 
 		                                 final @QueryParameter String usernameValue,

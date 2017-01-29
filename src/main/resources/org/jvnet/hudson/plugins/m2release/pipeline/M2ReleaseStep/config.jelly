@@ -1,7 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 The MIT License
 
-Copyright (c) 2011, CloudBees, Inc.
+Copyright (c) 2016 Steven G. Brown
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +24,18 @@ THE SOFTWARE.
 -->
 
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
-         xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
-  <j:set var="info" value="${it.getLastReleaseInfoOf(job)}" />
-  <td data="${info.build.timestampString2}">
-    <j:if test="${info!=null}">
-      ${info.build.timestampString}
-      (<a href="${jobBaseUrl}${job.shortUrl}lastRelease/">${info.action.versionNumber}</a>)
-    </j:if>
-  </td>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
+    <j:set var="jobFieldId" value="${h.generateId()}"/>
+    <f:entry field="job" title="Project to Release">
+        <f:textbox id="${jobFieldId}"/>
+    </f:entry>
+    <f:entry field="releaseVersion" title="Release version">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="developmentVersion" title="Development (after release) version">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="dryRun" title="Dry run?">
+        <f:checkbox/>
+    </f:entry>
 </j:jelly>
