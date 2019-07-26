@@ -55,6 +55,7 @@ import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.apache.maven.shared.release.versions.VersionParseException;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**
  * The action appears as the link in the side bar that users will click on in
@@ -85,6 +86,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	}
 
 	public List<ParameterDefinition> getParameterDefinitions() {
+		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		ParametersDefinitionProperty pdp = project.getProperty(ParametersDefinitionProperty.class);
 		List<ParameterDefinition> pds = Collections.emptyList();
 		if (pdp != null) {
@@ -114,10 +116,12 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	}
 
 	public boolean isSelectScmCredentials() {
+		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		return selectScmCredentials;
 	}
 
 	public boolean isSelectCustomScmCommentPrefix() {
+		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		return selectCustomScmCommentPrefix;
 	}
 
@@ -126,6 +130,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	}
 
 	public boolean isSelectAppendHudsonUsername() {
+		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		return selectAppendHudsonUsername;
 	}
 
@@ -134,6 +139,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	}
 
 	public boolean isSelectCustomScmTag() {
+		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		return selectCustomScmTag;
 	}
 
@@ -146,6 +152,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	}
 
 	public String computeReleaseVersion() {
+		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		String version = "NaN";
 		final MavenModule rootModule = getRootModule();
 		if (rootModule != null && StringUtils.isNotBlank(rootModule.getVersion())) {
@@ -162,6 +169,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	}
 
 	public String computeRepoDescription() {
+		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		StringBuilder sb = new StringBuilder();
 		sb.append(project.getRootModule().getName());
 		sb.append(':');
@@ -170,6 +178,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	}
 
 	public String computeScmTag() {
+		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		// maven default is artifact-version
 		String artifactId = getRootModule() == null ? "M2RELEASE-TAG" : getRootModule().getModuleName().artifactId;
 		StringBuilder sb = new StringBuilder();
@@ -180,6 +189,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	}
 
 	public String computeNextVersion() {
+		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		String version = "NaN-SNAPSHOT";
 		final MavenModule rootModule = getRootModule();
 		if (rootModule != null && StringUtils.isNotBlank(rootModule.getVersion())) {
@@ -195,9 +205,11 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	}
 
 	public boolean isNexusSupportEnabled() {
+		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		return project.getBuildWrappersList().get(M2ReleaseBuildWrapper.class).getDescriptor().isNexusSupport();
 	}
 
+	@RequirePOST
 	public void doSubmit(StaplerRequest req, StaplerResponse resp) throws IOException, ServletException {
 		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		M2ReleaseBuildWrapper m2Wrapper = project.getBuildWrappersList().get(M2ReleaseBuildWrapper.class);
@@ -298,6 +310,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	 * Gets the {@link ParameterDefinition} of the given name, if any.
 	 */
 	public ParameterDefinition getParameterDefinition(String name) {
+		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		for (ParameterDefinition pd : getParameterDefinitions()) {
 			if (pd.getName().equals(name)) {
 				return pd;
