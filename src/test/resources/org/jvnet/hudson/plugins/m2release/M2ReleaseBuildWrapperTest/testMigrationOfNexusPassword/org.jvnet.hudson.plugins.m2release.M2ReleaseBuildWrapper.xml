@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<org.jvnet.hudson.plugins.m2release.M2ReleaseBuildWrapper_-DescriptorImpl plugin="m2release@0.14.0">
+    <nexusSupport>true</nexusSupport>
+    <nexusURL>http://localhost:99/nexus/</nexusURL>
+    <nexusUser>myusername</nexusUser>
+    <nexusPassword>mysecretpassword</nexusPassword>
+</org.jvnet.hudson.plugins.m2release.M2ReleaseBuildWrapper_-DescriptorImpl>

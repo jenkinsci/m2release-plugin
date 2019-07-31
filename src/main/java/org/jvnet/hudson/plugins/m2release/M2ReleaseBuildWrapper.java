@@ -47,6 +47,7 @@ import hudson.tasks.BuildWrapperDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import hudson.util.RunList;
+import hudson.util.Secret;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -189,7 +190,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 				M2ReleaseArgumentsAction args = bld.getAction(M2ReleaseArgumentsAction.class);
 				if (args.isCloseNexusStage() && !args.isDryRun()) {
 					StageClient client = new StageClient(new URL(getDescriptor().getNexusURL()), getDescriptor()
-							.getNexusUser(), getDescriptor().getNexusPassword());
+							.getNexusUser(), getDescriptor().getNexusPassword().getPlainText());
 					try {
 						MavenModule rootModule = mmSet.getRootModule();
 						// TODO grab the version that we have just released...
@@ -475,7 +476,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		private boolean nexusSupport  = false;
 		private String  nexusURL      = null;
 		private String  nexusUser     = "deployment";                                    //$NON-NLS-1$
-		private String  nexusPassword = "deployment123";                                 //$NON-NLS-1$
+		private Secret  nexusPassword = Secret.fromString("deployment123");               //$NON-NLS-1$
 		
 
 
@@ -503,7 +504,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 					nexusURL = nexusURL + "/";
 				}
 				nexusUser = Util.fixEmpty(nexusParams.getString("nexusUser")); //$NON-NLS-1$
-				nexusPassword = nexusParams.getString("nexusPassword"); //$NON-NLS-1$
+				nexusPassword = Secret.fromString(nexusParams.getString("nexusPassword")); //$NON-NLS-1$
 			}
 			save();
 			return true; // indicate that everything is good so far
@@ -525,7 +526,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		}
 
 
-		public String getNexusPassword() {
+		public Secret getNexusPassword() {
 			return nexusPassword;
 		}
 
@@ -539,8 +540,8 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		 */
 		public FormValidation doUrlCheck(@QueryParameter String urlValue, 
 		                                 final @QueryParameter String usernameValue,
-		                                 final @QueryParameter String passwordValue) throws IOException,
-		                                                                      ServletException {
+		                                 final @QueryParameter Secret passwordValue) throws IOException,
+		                                                                                    ServletException {
 			// this method can be used to check if a file exists anywhere in the file system,
 			// so it should be protected.
 			if (!Hudson.getInstance().hasPermission(Hudson.ADMINISTER)) {
@@ -564,7 +565,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 				if (!(url.getProtocol().equals("http") || url.getProtocol().equals("https"))) {
 					return FormValidation.error("protocol must be http or https");
 				}
-				StageClient client = new StageClient(new URL(testURL), usernameValue, passwordValue);
+				StageClient client = new StageClient(new URL(testURL), usernameValue, passwordValue.getPlainText());
 				client.checkAuthentication();
 			}
 			catch (MalformedURLException ex) {
