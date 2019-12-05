@@ -64,22 +64,27 @@ public class M2ReleaseArgumentInterceptorAction implements MavenArgumentIntercep
         this.scmPassword = scmPassword;
 	}
 
+	@Override
 	public String getIconFileName() {
 		return null;
 	}
 
+	@Override
 	public String getDisplayName() {
 		return null;
 	}
 
+	@Override
 	public String getUrlName() {
 		return null;
 	}
 
+	@Override
 	public String getGoalsAndOptions(MavenModuleSetBuild build) {
 		return goalsAndOptions;
 	}
 
+	@Override
 	public ArgumentListBuilder intercept(ArgumentListBuilder mavenargs, MavenModuleSetBuild build) {
 		
 		// calling internal Method, which now (without MavenModuleSetBuil) can be tested easily

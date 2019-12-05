@@ -6,6 +6,8 @@ import hudson.model.*;
 import hudson.plugins.view.dashboard.DashboardPortlet;
 import hudson.tasks.Mailer;
 import hudson.util.RunList;
+import jenkins.model.Jenkins;
+import jenkins.model.JenkinsLocationConfiguration;
 import org.jvnet.hudson.plugins.m2release.M2ReleaseBadgeAction;
 import org.jvnet.hudson.plugins.m2release.ReleaseCause;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -22,8 +24,9 @@ public class RecentReleasesPortlet extends DashboardPortlet {
         super(name);
     }
 
+    @SuppressWarnings("rawtypes")
     public Collection<Run> getRecentReleases(int max) {
-        LinkedList<Run> recentReleases = new LinkedList<Run>();
+        LinkedList<Run> recentReleases = new LinkedList<>();
 
         for (Job job : getDashboard().getJobs()) {
             for (Run run = job.getLastCompletedBuild(); run != null && (recentReleases.size() < max || run.getTimestamp().compareTo(recentReleases.getLast().getTimestamp()) > 0); run = run.getPreviousBuild()) {
@@ -48,12 +51,13 @@ public class RecentReleasesPortlet extends DashboardPortlet {
      * @param run Must be a release run - i.e. have a ReleaseBuildBadgeAction
      * @return
      */
-    public String getReleaseVersion(Run run) {
+    public String getReleaseVersion(@SuppressWarnings("rawtypes")Run run) {
         M2ReleaseBadgeAction rbb = run.getAction(M2ReleaseBadgeAction.class);
 
         return rbb.getVersionNumber();
     }
 
+    @SuppressWarnings("rawtypes")
     private boolean insertRun(Run run, LinkedList<Run> recentReleases, int max) {
         ListIterator<Run> iter = recentReleases.listIterator();
         Run recentRun = null;
@@ -95,6 +99,7 @@ public class RecentReleasesPortlet extends DashboardPortlet {
         rss(req, rsp, " failed builds", RunList.fromRuns(getRecentReleases(20)).failureOnly());
     }
 
+    @SuppressWarnings("rawtypes")
     private void rss(StaplerRequest req, StaplerResponse rsp, String suffix, RunList runs) throws IOException, ServletException {
         RSS.forwardToRss(getDisplayName() + suffix, getDashboard().getUrl() + getUrl(),
                 runs.newBuilds(), new RelativePathFeedAdapter(getDashboard().getUrl() + getUrl()), req, rsp);
@@ -104,7 +109,7 @@ public class RecentReleasesPortlet extends DashboardPortlet {
 
         @Extension(optional = true)
         public static DescriptorImpl newInstance() {
-            if (Hudson.getInstance().getPlugin("dashboard-view") != null) {
+            if (Jenkins.get().getPlugin("dashboard-view") != null) {
                 return new DescriptorImpl();
             } else {
                 return null;
@@ -117,6 +122,7 @@ public class RecentReleasesPortlet extends DashboardPortlet {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private class RelativePathFeedAdapter implements FeedAdapter<Run> {
         private String url;
 
@@ -124,29 +130,35 @@ public class RecentReleasesPortlet extends DashboardPortlet {
             this.url = url;
         }
 
-        public String getEntryTitle(Run entry) {
+        @Override
+		public String getEntryTitle(Run entry) {
             return entry + " (" + entry.getResult() + ")";
         }
 
-        public String getEntryUrl(Run entry) {
+        @Override
+		public String getEntryUrl(Run entry) {
             return url + entry.getUrl();
         }
 
-        public String getEntryID(Run entry) {
+        @Override
+		public String getEntryID(Run entry) {
             return "tag:" + "hudson.dev.java.net,"
                     + entry.getTimestamp().get(Calendar.YEAR) + ":"
                     + entry.getParent().getName() + ':' + entry.getId();
         }
 
-        public String getEntryDescription(Run entry) {
+        @Override
+		public String getEntryDescription(Run entry) {
             return getReleaseVersion(entry);
         }
 
-        public Calendar getEntryTimestamp(Run entry) {
+        @Override
+		public Calendar getEntryTimestamp(Run entry) {
             return entry.getTimestamp();
         }
 
-        public String getEntryAuthor(Run entry) {
+        @Override
+		public String getEntryAuthor(Run entry) {
             // release builds are manual so get the UserCause
             // and report rss entry as user who kicked off build
             List<Cause> causes = entry.getCauses();
@@ -157,7 +169,7 @@ public class RecentReleasesPortlet extends DashboardPortlet {
             }
 
             // in the unexpected case where there is no user cause, return admin
-            return Mailer.descriptor().getAdminAddress();
+            return JenkinsLocationConfiguration.get().getAdminAddress();
         }
     }
 

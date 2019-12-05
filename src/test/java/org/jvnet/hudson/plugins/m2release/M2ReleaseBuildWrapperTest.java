@@ -24,6 +24,7 @@ public class M2ReleaseBuildWrapperTest {
     public JenkinsRule jr = new JenkinsRule();
 
 
+    @SuppressWarnings("null") // eclipse does not understand fail() throws an Exception
     @Issue("SECURITY-1435")
     @Test
     @LocalData

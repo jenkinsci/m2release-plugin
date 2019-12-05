@@ -2,7 +2,7 @@ package org.jvnet.hudson.plugins.m2release.nexus;
 
 import java.net.URL;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Assume;
 import org.junit.Ignore;

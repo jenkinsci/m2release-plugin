@@ -27,14 +27,13 @@ import hudson.maven.MavenModule;
 import hudson.maven.MavenModuleSet;
 import hudson.model.ParameterValue;
 import hudson.model.BooleanParameterValue;
-import hudson.model.Hudson;
 import hudson.model.ParameterDefinition;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.PasswordParameterValue;
 import hudson.model.PermalinkProjectAction;
 import hudson.model.StringParameterValue;
-
+import jenkins.model.Jenkins;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -96,14 +95,17 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		return pds;
 	}
 
+	@Override
 	public List<Permalink> getPermalinks() {
 		return PERMALINKS;
 	}
 
+	@Override
 	public String getDisplayName() {
 		return Messages.ReleaseAction_perform_release_name();
 	}
 
+	@Override
 	public String getIconFileName() {
 		if (M2ReleaseBuildWrapper.hasReleasePermission(project)) {
 			return "installer.gif"; //$NON-NLS-1$
@@ -112,6 +114,8 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		return null;
 	}
 
+	
+	@Override
 	public String getUrlName() {
 		return "m2release"; //$NON-NLS-1$
 	}
@@ -242,13 +246,13 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		// get the normal job parameters (adapted from
 		// hudson.model.ParametersDefinitionProperty._doBuild(StaplerRequest,
 		// StaplerResponse))
-		List<ParameterValue> values = new ArrayList<ParameterValue>();
+		List<ParameterValue> values = new ArrayList<>();
 		JSONObject formData = req.getSubmittedForm();
 		JSONArray a = JSONArray.fromObject(formData.get("parameter"));
 		for (Object o : a) {
 			if (o instanceof JSONObject) {
 				JSONObject jo = (JSONObject) o;
-				if (jo != null && !jo.isNullObject()) {
+				if (!jo.isNullObject()) {
 					String name = jo.optString("name");
 					if (name != null) {
 						ParameterDefinition d = getParameterDefinition(name);
@@ -292,7 +296,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		arguments.setScmTagName(scmTag);
 		arguments.setScmCommentPrefix(scmCommentPrefix);
 		arguments.setAppendHusonUserName(appendHusonUserName);
-		arguments.setHudsonUserName(Hudson.getAuthentication().getName());
+		arguments.setHudsonUserName(Jenkins.getAuthentication().getName());
 
 		
 		if (project.scheduleBuild(0, new ReleaseCause(), parameters, arguments)) {
@@ -362,7 +366,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		 * @param key
 		 * @return
 		 */
-		private String getString(String key) throws javax.servlet.ServletException, java.io.IOException {
+		private String getString(String key) {
 			if (isMultipartEncoded) {
 				// borrowed from org.kohsuke.staple.RequestImpl
 				FileItem item = parsedFormData.get(key);
@@ -382,7 +386,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 					throw new IllegalArgumentException("Parameter not found: " + key);
 				}
 			} else {
-				return (String) (((Object[]) request.getParameterMap().get(key))[0]);
+				return request.getParameterMap().get(key)[0];
 			}
 		}
 
@@ -392,7 +396,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		 * @param key parameter name
 		 * @return
 		 */
-		private boolean containsKey(String key) throws javax.servlet.ServletException, java.io.IOException {
+		private boolean containsKey(String key) {
 			// JENKINS-16043, POST can be multipart encoded if there's a file parameter in the job
 			if (isMultipartEncoded) {
 				return parsedFormData.containsKey(key);

@@ -74,6 +74,7 @@ public class M2ReleaseBadgeAction implements BuildBadgeAction, RunAction2 {
 	 * 
 	 * @return <code>null</code> as we don't display any text to the user.
 	 */
+	@Override
 	public String getDisplayName() {
 		return null;
 	}
@@ -83,6 +84,7 @@ public class M2ReleaseBadgeAction implements BuildBadgeAction, RunAction2 {
 	 * 
 	 * @return <code>null</code> as badges icons are rendered by the jelly.
 	 */
+	@Override
 	public String getIconFileName() {
 		return null;
 	}
@@ -92,6 +94,7 @@ public class M2ReleaseBadgeAction implements BuildBadgeAction, RunAction2 {
 	 * 
 	 * @return <code>null</code> as this action object doesn't need to be bound to web.
 	 */
+	@Override
 	public String getUrlName() {
 		return null;
 	}
@@ -162,10 +165,12 @@ public class M2ReleaseBadgeAction implements BuildBadgeAction, RunAction2 {
 		}
 	}
 
+	@Override
 	public void onAttached(Run<?, ?> run) {
 		this.run = run;
 	}
 
+	@Override
 	public void onLoad(Run<?, ?> run) {
 		this.run = run;
 	}

@@ -48,7 +48,7 @@ import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import hudson.util.RunList;
 import hudson.util.Secret;
-
+import jenkins.model.Jenkins;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -57,8 +57,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
-
-import javax.servlet.ServletException;
 
 import net.sf.json.JSONObject;
 
@@ -236,7 +234,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 
 					// the value may have changed since a previous release so go searching...
 					log.debug("looking for extra release builds to lock/unlock.");
-					for (Run run : (RunList<? extends Run>) (bld.getProject().getBuilds())) {
+					for (@SuppressWarnings("rawtypes")Run run : (RunList<? extends Run>) (bld.getProject().getBuilds())) {
 						log.debug("checking build #{}", run.getNumber());
 						if (isSuccessfulReleaseBuild(run)) {
 							log.debug("build #{} was successful.", run.getNumber());
@@ -272,7 +270,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 			 * @param run the run to check
 			 * @return <code>true</code> if this is a successful release build that is not a dry run.
 			 */
-			private boolean isSuccessfulReleaseBuild(Run run) {
+			private boolean isSuccessfulReleaseBuild(@SuppressWarnings("rawtypes")Run run) {
 				M2ReleaseBadgeAction a = run.getAction(M2ReleaseBadgeAction.class);
 				if (a != null && !run.isBuilding()) {
 					Result result = run.getResult();
@@ -425,7 +423,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 				tmpPerm = ctor.newInstance(Item.PERMISSIONS, 
 				                           "Release",
 				                            Messages._CreateReleasePermission_Description(),
-				                            Hudson.ADMINISTER,
+				                            Jenkins.ADMINISTER,
 //				                            true,
 				                            f.get(null));
 				LoggerFactory.getLogger(M2ReleaseBuildWrapper.class).info("Using new style Permission with PermissionScope");
@@ -459,7 +457,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 				tmpPerm = new Permission(Item.PERMISSIONS,
 				                         "Release", //$NON-NLS-1$
 				                          Messages._CreateReleasePermission_Description(),
-				                          Hudson.ADMINISTER);
+				                          Jenkins.ADMINISTER);
 			}
 			CREATE_RELEASE = tmpPerm;
 		}
@@ -544,24 +542,23 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		 */
 		public FormValidation doUrlCheck(@QueryParameter String urlValue, 
 		                                 final @QueryParameter String usernameValue,
-		                                 final @QueryParameter Secret passwordValue) throws IOException,
-		                                                                                    ServletException {
+		                                 final @QueryParameter Secret passwordValue) {
 			// this method can be used to check if a file exists anywhere in the file system,
 			// so it should be protected.
-			if (!Hudson.getInstance().hasPermission(Hudson.ADMINISTER)) {
+			if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
 				return FormValidation.ok();
 			}
 			
-			urlValue = Util.fixEmptyAndTrim(urlValue);
-			if (urlValue == null) {
+			String trimmedUrl = Util.fixEmptyAndTrim(urlValue);
+			if (trimmedUrl == null) {
 				return FormValidation.ok();
 			}
 			final String testURL;
-			if (!urlValue.endsWith("/")) {
-				testURL = urlValue + "/";
+			if (!trimmedUrl.endsWith("/")) {
+				testURL = trimmedUrl + "/";
 			}
 			else {
-				testURL = urlValue;
+				testURL = trimmedUrl;
 			}
 			URL url = null;
 			try {

@@ -374,7 +374,7 @@ public class StageClient {
 	 * @throws XPathException if the XPath expression is invalid.
 	 */
 	protected List<Stage> getOpenStageIDs(Document doc) throws StageException {
-		List<Stage> stages = new ArrayList<Stage>();
+		List<Stage> stages = new ArrayList<>();
 
 		NodeList stageRepositories =
 		      (NodeList) evaluateXPath("//stagingProfileRepository", doc, XPathConstants.NODESET);
