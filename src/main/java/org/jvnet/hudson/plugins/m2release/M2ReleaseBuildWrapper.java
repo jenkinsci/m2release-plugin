@@ -188,6 +188,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 				
 				final MavenModuleSet mmSet = getModuleSet(bld);
 				M2ReleaseArgumentsAction args = bld.getAction(M2ReleaseArgumentsAction.class);
+				Result result = bld.getResult();
 				if (args.isCloseNexusStage() && !args.isDryRun()) {
 					StageClient client = new StageClient(new URL(getDescriptor().getNexusURL()), getDescriptor()
 							.getNexusUser(), getDescriptor().getNexusPassword().getPlainText());
@@ -197,7 +198,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 						Stage stage = client.getOpenStageID(rootModule.getModuleName().groupId,
 								rootModule.getModuleName().artifactId, args.getReleaseVersion());
 						if (stage != null) {
-							if (bld.getResult() != null && bld.getResult().isBetterOrEqualTo(Result.SUCCESS)) {
+							if (result != null && result.isBetterOrEqualTo(Result.SUCCESS)) {
 								lstnr.getLogger().println("[M2Release] Closing repository " + stage);
 								client.closeStage(stage, args.getRepoDescription());
 								lstnr.getLogger().println("[M2Release] Closed staging repository.");
@@ -225,7 +226,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 					lstnr.getLogger().println("[M2Release] its only a dryRun, no need to mark it for keep");
 				}
 				int buildsKept = 0;
-				if (bld.getResult() != null && bld.getResult().isBetterOrEqualTo(Result.SUCCESS) && !args.isDryRun()) {
+				if (result != null && result.isBetterOrEqualTo(Result.SUCCESS) && !args.isDryRun()) {
 					if (numberOfReleaseBuildsToKeep > 0 || numberOfReleaseBuildsToKeep == -1) {
 						// keep this build.
 						lstnr.getLogger().println("[M2Release] assigning keep build to current build.");
@@ -273,8 +274,11 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 			 */
 			private boolean isSuccessfulReleaseBuild(Run run) {
 				M2ReleaseBadgeAction a = run.getAction(M2ReleaseBadgeAction.class);
-				if (a != null && !run.isBuilding() && run.getResult().isBetterOrEqualTo(Result.SUCCESS) && !a.isDryRun()) {
-					return true;
+				if (a != null && !run.isBuilding()) {
+					Result result = run.getResult();
+					if (result != null && result.isBetterOrEqualTo(Result.SUCCESS) && !a.isDryRun()) {
+						return true;
+					}
 				}
 				return false;
 			}
