@@ -37,11 +37,10 @@ import hudson.model.Result;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Descriptor;
-import hudson.model.Hudson;
 import hudson.model.Item;
 import hudson.model.Run;
 import hudson.security.Permission;
-import hudson.security.PermissionGroup;
+import hudson.security.PermissionScope;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import hudson.tasks.Builder;
@@ -50,10 +49,6 @@ import hudson.util.RunList;
 import hudson.util.Secret;
 import jenkins.model.Jenkins;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
@@ -64,7 +59,6 @@ import org.apache.commons.lang.StringUtils;
 import org.jvnet.hudson.plugins.m2release.nexus.Stage;
 import org.jvnet.hudson.plugins.m2release.nexus.StageClient;
 import org.jvnet.hudson.plugins.m2release.nexus.StageException;
-import org.jvnet.localizer.Localizable;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -367,7 +361,8 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	 * Evaluate if the current build should be a release build.
 	 * @return <code>true</code> if this build is a release build.
 	 */
-	private boolean isReleaseBuild(@SuppressWarnings("rawtypes") AbstractBuild build) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private boolean isReleaseBuild(AbstractBuild build) {
 		return (build.getCause(ReleaseCause.class) != null);
 	}
 
@@ -384,7 +379,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	}
 
 	/**
-	 * Hudson defines a method {@link Builder#getDescriptor()}, which returns the corresponding
+	 * Jenkins defines a method {@link Builder#getDescriptor()}, which returns the corresponding
 	 * {@link Descriptor} object. Since we know that it's actually {@link DescriptorImpl}, override the method
 	 * and give a better return type, so that we can access {@link DescriptorImpl} methods more easily. This is
 	 * not necessary, but just a coding style preference.
@@ -398,69 +393,9 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	@Extension
 	public static class DescriptorImpl extends BuildWrapperDescriptor {
 		
-		public static final Permission CREATE_RELEASE;
-
-		static {
-			Permission tmpPerm = null;
-			try {
-				// Jenkins changed the security model in a non backward compatible way :-(
-				// JENKINS-10661
-				Class<?> permissionScopeClass = Class.forName("hudson.security.PermissionScope");
-				Object psArr = Array.newInstance(permissionScopeClass, 2);
-				Field f;
-				f = permissionScopeClass.getDeclaredField("JENKINS");
-				Array.set(psArr, 0, f.get(null));
-				f = permissionScopeClass.getDeclaredField("ITEM");
-				Array.set(psArr, 1, f.get(null));
-				
-				Constructor<Permission> ctor = Permission.class.getConstructor(PermissionGroup.class, 
-						String.class, 
-						Localizable.class, 
-						Permission.class, 
-//						boolean.class,
-						permissionScopeClass);
-						//permissionScopes.getClass());
-				tmpPerm = ctor.newInstance(Item.PERMISSIONS, 
-				                           "Release",
-				                            Messages._CreateReleasePermission_Description(),
-				                            Jenkins.ADMINISTER,
-//				                            true,
-				                            f.get(null));
-				LoggerFactory.getLogger(M2ReleaseBuildWrapper.class).info("Using new style Permission with PermissionScope");
-
-			}
-			// all these exceptions are Jenkins < 1.421 or Hudson
-			// wouldn't multicatch be nice!
-			catch (NoSuchMethodException ex) {
-				LoggerFactory.getLogger(M2ReleaseBuildWrapper.class).warn("Using Legacy Permission as new PermissionScope not detected. {}", ex.getMessage());
-			}
-			catch (InvocationTargetException ex) {
-				LoggerFactory.getLogger(M2ReleaseBuildWrapper.class).warn("Using Legacy Permission as new PermissionScope not detected. {}", ex.getMessage());
-			}
-			catch (IllegalArgumentException ex) {
-				LoggerFactory.getLogger(M2ReleaseBuildWrapper.class).warn("Using Legacy Permission as new PermissionScope not detected. {}", ex.getMessage());
-			}
-			catch (IllegalAccessException ex) {
-				LoggerFactory.getLogger(M2ReleaseBuildWrapper.class).warn("Using Legacy Permission as new PermissionScope not detected. {}", ex.getMessage());
-			}
-			catch (InstantiationException ex) {
-				LoggerFactory.getLogger(M2ReleaseBuildWrapper.class).warn("Using Legacy Permission as new PermissionScope not detected. {}", ex.getMessage());
-			}
-			catch (NoSuchFieldException ex) {
-				LoggerFactory.getLogger(M2ReleaseBuildWrapper.class).warn("Using Legacy Permission as new PermissionScope not detected. {}", ex.getMessage());
-			}
-			catch (ClassNotFoundException ex) {
-				LoggerFactory.getLogger(M2ReleaseBuildWrapper.class).warn("Using Legacy Permission as new PermissionScope not detected. {}", ex.getMessage());
-			}
-			if (tmpPerm == null) {
-				LoggerFactory.getLogger(M2ReleaseBuildWrapper.class).warn("Using Legacy Permission as new style permission with PermissionScope failed");
-				tmpPerm = new Permission(Item.PERMISSIONS,
-				                         "Release", //$NON-NLS-1$
-				                          Messages._CreateReleasePermission_Description(),
-				                          Jenkins.ADMINISTER);
-			}
-			CREATE_RELEASE = tmpPerm;
-		}
+		public static final Permission CREATE_RELEASE = new Permission(Item.PERMISSIONS, "Release",
+		                                                               Messages._CreateReleasePermission_Description(),
+		                                                               Jenkins.ADMINISTER, PermissionScope.ITEM);
 
 		public static final String     DEFAULT_RELEASE_GOALS = "-Dresume=false release:prepare release:perform"; //$NON-NLS-1$
 		public static final String     DEFAULT_DRYRUN_GOALS = "-Dresume=false -DdryRun=true release:prepare"; //$NON-NLS-1$

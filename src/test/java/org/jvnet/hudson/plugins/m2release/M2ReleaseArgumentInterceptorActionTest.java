@@ -42,7 +42,7 @@ public class M2ReleaseArgumentInterceptorActionTest {
 	@Before
 	public void setUp()
 	{
-		sut = new M2ReleaseArgumentInterceptorAction("");
+		sut = new M2ReleaseArgumentInterceptorAction("", null);
 		listBuilder = new ArgumentListBuilder();
 	}
 	

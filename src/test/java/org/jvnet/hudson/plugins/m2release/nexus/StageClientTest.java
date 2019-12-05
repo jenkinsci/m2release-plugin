@@ -398,6 +398,7 @@ public class StageClientTest {
 
 		HttpHandler handler = new HttpHandler() {
 
+			@Override
 			public void handle(HttpExchange exchange) throws IOException {
 				String path = exchange.getRequestURI().getPath();
 				if (path.equals(requestPath)) {

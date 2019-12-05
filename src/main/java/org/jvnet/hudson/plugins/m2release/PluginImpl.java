@@ -25,11 +25,14 @@ package org.jvnet.hudson.plugins.m2release;
 
 import hudson.Plugin;
 import org.jvnet.hudson.plugins.m2release.M2ReleaseBuildWrapper.DescriptorImpl;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * @author Kohsuke Kawaguchi
  */
 public class PluginImpl extends Plugin {
+    
+    @SuppressFBWarnings(value="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT", justification="the side effect is the permission is loaded")
     @Override
     public void start() throws Exception {
         // this permission designates a wrong parent group, which introduces a classloading problem
