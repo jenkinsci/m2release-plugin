@@ -221,30 +221,6 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.apache.maven</groupId> -->
-<!-- 			<artifactId>maven-core</artifactId> -->
-<!-- 			<version>${maven.test.version}</version> -->
-<!-- 			<scope>test</scope> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.apache.maven</groupId> -->
-<!-- 			<artifactId>maven-artifact</artifactId> -->
-<!-- 			<version>${maven.test.version}</version> -->
-<!-- 			<scope>test</scope> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.apache.maven</groupId> -->
-<!-- 			<artifactId>maven-model</artifactId> -->
-<!-- 			<version>${maven.test.version}</version> -->
-<!-- 			<scope>test</scope> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.apache.maven</groupId> -->
-<!-- 			<artifactId>maven-settings</artifactId> -->
-<!-- 			<version>${maven.test.version}</version> -->
-<!-- 			<scope>test</scope> -->
-<!-- 		</dependency> -->
 		<dependency>
 			<groupId>org.jenkins-ci</groupId>
 			<artifactId>test-annotations</artifactId>
@@ -258,19 +234,9 @@
 		</dependency>
 		
 	</dependencies>
+
 	<build>
 		<plugins>
-<!-- 			<plugin> -->
-<!-- 				until the fix for JENKINS-18918 is available in a backported skip any apache-maven-xxx folders in classes -->
-<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
-<!-- 				<artifactId>maven-jar-plugin</artifactId> -->
-<!-- 				<version>2.4</version> -->
-<!-- 				<configuration> -->
-<!-- 					<excludes> -->
-<!-- 						<exclude>**/apache-maven-*/*</exclude> -->
-<!-- 					</excludes> -->
-<!-- 				</configuration> -->
-<!-- 			</plugin> -->
 			<plugin>
 				<groupId>org.jenkins-ci.tools</groupId>
 				<artifactId>maven-hpi-plugin</artifactId>
