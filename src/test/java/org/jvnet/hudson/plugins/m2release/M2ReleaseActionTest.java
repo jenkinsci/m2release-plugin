@@ -27,33 +27,41 @@ import hudson.maven.MavenUtil;
 import hudson.maven.MavenModuleSet;
 import hudson.maven.MavenModuleSetBuild;
 import hudson.tasks.Maven.MavenInstallation;
-
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.Rule;
 import org.jvnet.hudson.plugins.m2release.M2ReleaseBuildWrapper.DescriptorImpl;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.ToolInstallations;
 
-public class M2ReleaseActionTest extends HudsonTestCase {
+public class M2ReleaseActionTest {
+	
+	@Rule
+	public JenkinsRule rule = new JenkinsRule();
 
 	public void testPrepareRelease_dryRun_m3() throws Exception {
-		MavenInstallation mavenInstallation = configureMaven3();
+		MavenInstallation mavenInstallation = ToolInstallations.configureMaven3();
 		final MavenModuleSetBuild build = this.runPepareRelease_dryRun("maven3-project.zip", "maven3-project/pom.xml", mavenInstallation);
 		assertTrue("should have been run with maven 3", MavenUtil.maven3orLater(build.getMavenVersionUsed()));
 	}
 
 	public void testPrepareRelease_dryRun_m2project_with_m3() throws Exception {
-		MavenInstallation mavenInstallation = configureMaven3();
+		MavenInstallation mavenInstallation = ToolInstallations.configureMaven3();
 		final MavenModuleSetBuild build = this.runPepareRelease_dryRun("maven2-project.zip", "pom.xml", mavenInstallation);
 		assertTrue("should have been run with maven 3", MavenUtil.maven3orLater(build.getMavenVersionUsed()));
 	}
 
 	public void testPrepareRelease_dryRun_m2project_with_m2() throws Exception {
-		MavenInstallation mavenInstallation = configureDefaultMaven();
+		MavenInstallation mavenInstallation = ToolInstallations.configureDefaultMaven();
 		final MavenModuleSetBuild build = this.runPepareRelease_dryRun("maven2-project.zip", "pom.xml", mavenInstallation);
 		assertFalse("should have been run with maven 2", MavenUtil.maven3orLater(build.getMavenVersionUsed()));
 	}
 
 	public MavenModuleSetBuild runPepareRelease_dryRun(String projectZip, String unpackedPom, MavenInstallation mavenInstallation) throws Exception {
-		MavenModuleSet m = createMavenProject();
+		MavenModuleSet m = rule.createProject(MavenModuleSet.class);
+		m.setRunHeadless(true);
 		m.setRootPOM(unpackedPom);
 		m.setMaven(mavenInstallation.getName());
 		m.setScm(new ExtractResourceSCM(getClass().getResource(projectZip)));
@@ -67,7 +75,7 @@ public class M2ReleaseActionTest extends HudsonTestCase {
 		args.setDryRun(true);
 		m.getBuildWrappersList().add(wrapper);
 		
-		return assertBuildStatusSuccess(m.scheduleBuild2(0, new ReleaseCause(), args));
+		return rule.assertBuildStatusSuccess(m.scheduleBuild2(0, new ReleaseCause(), args));
 	}
 
 }
