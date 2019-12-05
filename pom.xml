@@ -19,7 +19,7 @@
 	<properties>
 		<maven.test.version>3.1.0</maven.test.version>
 		<java.level>8</java.level>
-		<!--  Flaky tests do not belon gin this project -->
+		<!--  Flaky tests do not belong gin this project -->
 		<surefire.rerunFailingTestsCount>0</surefire.rerunFailingTestsCount>
 	</properties>
 
@@ -52,6 +52,18 @@
 		</license>
 	</licenses>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<!--  spotbugs is provided but this is compile so make sure we do not bundle this junk -->
+				<groupId>com.google.code.findbugs</groupId>
+				<artifactId>jsr305</artifactId>
+				<version>3.0.2</version>
+				<scope>provided</scope>
+				<optional>true</optional>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.jenkins-ci.main</groupId>
