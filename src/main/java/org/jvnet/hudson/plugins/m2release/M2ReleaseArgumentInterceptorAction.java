@@ -50,6 +50,7 @@ public class M2ReleaseArgumentInterceptorAction implements MavenArgumentIntercep
 
 	
 	private final transient String goalsAndOptions;
+	@SuppressWarnings("unused")
 	@Deprecated
 	private transient boolean isDryRun; // keep backward compatible
     private final transient String scmPassword;
@@ -64,22 +65,27 @@ public class M2ReleaseArgumentInterceptorAction implements MavenArgumentIntercep
         this.scmPassword = scmPassword;
 	}
 
+	@Override
 	public String getIconFileName() {
 		return null;
 	}
 
+	@Override
 	public String getDisplayName() {
 		return null;
 	}
 
+	@Override
 	public String getUrlName() {
 		return null;
 	}
 
+	@Override
 	public String getGoalsAndOptions(MavenModuleSetBuild build) {
 		return goalsAndOptions;
 	}
 
+	@Override
 	public ArgumentListBuilder intercept(ArgumentListBuilder mavenargs, MavenModuleSetBuild build) {
 		
 		// calling internal Method, which now (without MavenModuleSetBuil) can be tested easily
@@ -89,21 +95,18 @@ public class M2ReleaseArgumentInterceptorAction implements MavenArgumentIntercep
 	
 	ArgumentListBuilder internalIntercept(ArgumentListBuilder mavenArgumentListBuilder, boolean isIncrementalBuild) {
 		
-		ArgumentListBuilder returnListBuilder = new ArgumentListBuilder();
+		ArgumentListBuilder returnListBuilder;
 		List<String> argumentList = mavenArgumentListBuilder.toList();
 		
-		if (isIncrementalBuild && containsJenkinsIncrementalBuildArguments(argumentList))
-		{
+		if (isIncrementalBuild && containsJenkinsIncrementalBuildArguments(argumentList)) {
 			LOGGER.config("This Maven build seems to be configured as 'Incremental build'. This will be disables, as always the full project will be released");
 			returnListBuilder = removeAllIncrementalBuildArguments(mavenArgumentListBuilder.clone());
-		} else
-		{
+		} else {
 			returnListBuilder = mavenArgumentListBuilder.clone();
 		}
-
-        if (scmPassword != null) {
-            returnListBuilder.addMasked("-Dpassword=" + scmPassword);
-        }
+		if (scmPassword != null) {
+			returnListBuilder.addMasked("-Dpassword=" + scmPassword);
+		}
 		
 		return returnListBuilder;
 	}

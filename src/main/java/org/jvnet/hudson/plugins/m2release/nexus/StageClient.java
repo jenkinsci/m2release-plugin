@@ -374,7 +374,7 @@ public class StageClient {
 	 * @throws XPathException if the XPath expression is invalid.
 	 */
 	protected List<Stage> getOpenStageIDs(Document doc) throws StageException {
-		List<Stage> stages = new ArrayList<Stage>();
+		List<Stage> stages = new ArrayList<>();
 
 		NodeList stageRepositories =
 		      (NodeList) evaluateXPath("//stagingProfileRepository", doc, XPathConstants.NODESET);
@@ -637,9 +637,6 @@ public class StageClient {
 		// cause an IOException as we are in error - but there is no really way to tell this so check the
 		// length instead.
 		if (conn.getContentLength() > 0) {
-			if (conn.getContentLength() < 1024) {
-				byte[] data = new byte[conn.getConnectTimeout()];
-			}
 			if (conn.getErrorStream() != null) {
 				IOUtils.skip(conn.getErrorStream(), conn.getContentLength());
 			}

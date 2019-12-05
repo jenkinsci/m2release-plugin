@@ -41,8 +41,20 @@ public class ReleaseCause extends UserIdCause {
         }
     }
     
-    @Override
+	@Override
 	public String getShortDescription() {
 		return Messages.ReleaseCause_ShortDescription(getUserName());
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		// generally this is bad but the parent uses instanceof and does not check classes directly and we add nothing
+		// and it keeps spotbugs happy.  We should check authenticationName but that has been deprecated since before the dinosaurs
+		return super.equals(o);
+	}
+	
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 }

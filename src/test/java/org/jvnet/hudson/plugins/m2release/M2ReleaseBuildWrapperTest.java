@@ -3,7 +3,6 @@ package org.jvnet.hudson.plugins.m2release;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,6 +24,7 @@ public class M2ReleaseBuildWrapperTest {
     public JenkinsRule jr = new JenkinsRule();
 
 
+    @SuppressWarnings("null") // eclipse does not understand fail() throws an Exception
     @Issue("SECURITY-1435")
     @Test
     @LocalData
@@ -43,12 +43,9 @@ public class M2ReleaseBuildWrapperTest {
         assertThat("round tripped password", d.getNexusPassword().getPlainText(), is(PASSWORD));
 
         File f = new File(jr.jenkins.root, M2ReleaseBuildWrapper.class.getName() + ".xml");
-        FileInputStream fis = new FileInputStream(f);
-        try {
-            String content = IOUtils.toString(fis, "UTF-8");
+        try (FileInputStream fis = new FileInputStream(f)) {
+            String content = IOUtils.toString(fis, StandardCharsets.UTF_8);
             assertThat("password should be encrypted", content, not(containsString(PASSWORD)));
-        } finally {
-            fis.close();
         }
 
     }

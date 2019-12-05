@@ -67,16 +67,19 @@ public class M2ReleaseArgumentsAction implements Action {
 		super();
 	}
 
+	@Override
 	public String getIconFileName() {
 		// no icon.
 		return null;
 	}
 
+	@Override
 	public String getDisplayName() {
 		// don't display
 		return null;
 	}
 
+	@Override
 	public String getUrlName() {
 		// no url
 		return null;
@@ -103,7 +106,7 @@ public class M2ReleaseArgumentsAction implements Action {
 	}
 
 	public void setModuleReleaseVersions(Map<String, String> moduleReleaseVersions) {
-		this.moduleReleaseVersions = new TreeMap<String, String>(moduleReleaseVersions);
+		this.moduleReleaseVersions = new TreeMap<>(moduleReleaseVersions);
 	}
 
 	public Map<String, String> getModuledevelopmentVersions() {
@@ -111,7 +114,7 @@ public class M2ReleaseArgumentsAction implements Action {
 	}
 
 	public void setModuledevelopmentVersions(Map<String, String> moduledevelopmentVersions) {
-		this.moduledevelopmentVersions = new TreeMap<String, String>(moduledevelopmentVersions);
+		this.moduledevelopmentVersions = new TreeMap<>(moduledevelopmentVersions);
 	}
 
 	public boolean isCloseNexusStage() {
