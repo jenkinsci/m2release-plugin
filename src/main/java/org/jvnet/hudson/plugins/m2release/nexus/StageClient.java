@@ -103,8 +103,8 @@ public class StageClient {
 	/**
 	 * Get the ID for the Staging repository that holds the specified GAV.
 	 * 
-	 * @param groupId groupID to search for.
-	 * @param artifactId artifactID to search for.
+	 * @param group groupID to search for.
+	 * @param artifact artifactID to search for.
 	 * @param version version of the group/artifact to search for - may be <code>null</code>.
 	 * @return the stageID or null if no machine stage was found.
 	 * @throws StageException if any issue occurred whilst locating the open stage.
@@ -134,6 +134,7 @@ public class StageClient {
 	 * Close the specified stage.
 	 * 
 	 * @param stage the stage to close.
+	 * @param description the description to add to the stage..
 	 * @throws StageException if any issue occurred whilst closing the stage.
 	 */
 	public void closeStage(Stage stage, String description) throws StageException {
@@ -225,7 +226,7 @@ public class StageClient {
 	 * Completion of the stage action is asynchronous - so poll until the action completed.
 	 * 
 	 * @param stage the stage to wait until the previous action is completed.
-	 * @throws StageException
+	 * @throws StageException if any issue occurred whilst closing the stage.
 	 */
 	protected void waitForActionToComplete(Stage stage) throws StageException {
 		log.debug("Waiting for {} to finish transitioning.", stage);
@@ -259,7 +260,6 @@ public class StageClient {
 	/**
 	 * Check if we have the required permissions for nexus staging.
 	 * 
-	 * @return
 	 * @throws StageException if an exception occurred whilst checking the authorisation.
 	 */
 	public void checkAuthentication() throws StageException {
@@ -324,9 +324,8 @@ public class StageClient {
 	/**
 	 * Checks if this Nexus server uses asynchronous stage actions.
 	 * 
-	 * @param version the version of this server
 	 * @return true if this server uses asynchronous stage actions (i.e. the server is 2.4 or newer).
-	 * @throws StageException if we could not retreive the server version.
+	 * @throws StageException if we could not retrieve the server version.
 	 */
 	protected boolean isAsyncClose() throws StageException {
 		String version = getServerVersion();
@@ -371,7 +370,7 @@ public class StageClient {
 	 * 
 	 * @param doc the stagingRepositories to parse.
 	 * @return a List of open stages.
-	 * @throws XPathException if the XPath expression is invalid.
+	 * @throws StageException if the XPath expression is invalid (which it should never be).
 	 */
 	protected List<Stage> getOpenStageIDs(Document doc) throws StageException {
 		List<Stage> stages = new ArrayList<>();
