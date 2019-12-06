@@ -62,6 +62,7 @@ import org.jvnet.hudson.plugins.m2release.nexus.StageException;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.verb.POST;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -475,6 +476,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		/**
 		 * Checks if the Nexus URL exists and we can authenticate against it.
 		 */
+		@POST
 		public FormValidation doUrlCheck(@QueryParameter String urlValue, 
 		                                 final @QueryParameter String usernameValue,
 		                                 final @QueryParameter Secret passwordValue) {

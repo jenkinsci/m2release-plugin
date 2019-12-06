@@ -23,36 +23,33 @@
  */
 package org.jvnet.hudson.plugins.m2release.nexus;
 
-import hudson.util.IOUtils;
-
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
 import org.apache.commons.codec.binary.Base64;
+import org.kohsuke.accmod.restrictions.suppressions.SuppressRestrictedWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
+import hudson.util.IOUtils;
+import jenkins.util.xml.XMLUtils;
 /**
  * The Stage client acts as the interface to Nexus Pro staging via the Nexus REST APIs. A single StageClient
  * is not thread safe.
@@ -466,6 +463,7 @@ public class StageClient {
 	 * @return the parsed Document.
 	 * @throws StageException if there was an issue obtaining or parsing the document.
 	 */
+	@SuppressRestrictedWarnings(XMLUtils.class) // TODO remove when baseline > 2.179
 	protected Document getDocument(URL url) throws StageException {
 		try {
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -473,10 +471,11 @@ public class StageClient {
 			conn.setRequestProperty("Accept", "application/xml");
 			int status = conn.getResponseCode();
 			if (status == HttpURLConnection.HTTP_OK) {
-				DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-				Document doc = builder.parse(conn.getInputStream());
-				conn.disconnect();
-				return doc;
+				try (InputStream is = conn.getInputStream(); InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+					Document doc = XMLUtils.parse(isr);
+					conn.disconnect();
+					return doc;
+				}
 			}
 			else {
 				drainOutput(conn);
@@ -493,9 +492,6 @@ public class StageClient {
 		}
 		catch (IOException ex) {
 			throw createStageExceptionForIOException(nexusURL, ex);
-		}
-		catch (ParserConfigurationException ex) {
-			throw new StageException(ex);
 		}
 		catch (SAXException ex) {
 			throw new StageException(ex);
