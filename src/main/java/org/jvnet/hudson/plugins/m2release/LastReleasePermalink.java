@@ -48,6 +48,9 @@ public class LastReleasePermalink extends PeepholePermalink {
 
    @Override
    public boolean apply(Run<?, ?> run) {
+      if (run == null) {
+         return false;
+      }
       boolean retVal = false;
       M2ReleaseBadgeAction a = run.getAction(M2ReleaseBadgeAction.class);
       if (a != null) {
