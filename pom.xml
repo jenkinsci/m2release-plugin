@@ -4,7 +4,7 @@
 	<groupId>org.jenkins-ci.plugins.m2release</groupId>
 	<artifactId>m2release</artifactId>
 	<packaging>hpi</packaging>
-	<version>0.16.2-SNAPSHOT</version>
+	<version>0.16.2</version>
 
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
@@ -42,7 +42,7 @@
 		<connection>scm:git:git://github.com/jenkinsci/m2release-plugin.git</connection>
 		<developerConnection>scm:git:git@github.com:jenkinsci/m2release-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/m2release-plugin/</url>
-		<tag>HEAD</tag>
+		<tag>m2release-0.16.2</tag>
 	</scm>
 
 	<licenses>
