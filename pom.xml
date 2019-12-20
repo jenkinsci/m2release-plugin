@@ -19,8 +19,10 @@
 	<properties>
 		<maven.test.version>3.1.0</maven.test.version>
 		<java.level>8</java.level>
-		<!--  Flaky tests do not belong gin this project -->
+		<!--  Flaky tests do not belong in this project -->
 		<surefire.rerunFailingTestsCount>0</surefire.rerunFailingTestsCount>
+		<jenkins.version>2.204.1</jenkins.version>
+		<slf4jVersion>1.7.26</slf4jVersion>
 	</properties>
 
 	<developers>
@@ -61,12 +63,6 @@
 				<version>3.0.2</version>
 				<scope>provided</scope>
 				<optional>true</optional>
-			</dependency>
-			<dependency>
-				<!--  newer version needed by wiremock that is in the test harness -->
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-security</artifactId>
-				<version>9.4.20.v20190813</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -242,21 +238,9 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
-			<artifactId>wiremock-jre8</artifactId>
+			<artifactId>wiremock-jre8-standalone</artifactId>
 			<version>2.25.1</version>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.commons</groupId>
-					<artifactId>commons-lang3</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<!--  TODO remove when baseline > 2.179 -->
-			<groupId>org.kohsuke</groupId>
-			<artifactId>access-modifier-suppressions</artifactId>
-			<version>${access-modifier-annotation.version}</version>
 		</dependency>
 	</dependencies>
 

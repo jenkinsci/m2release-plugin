@@ -41,7 +41,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.apache.commons.codec.binary.Base64;
-import org.kohsuke.accmod.restrictions.suppressions.SuppressRestrictedWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -463,7 +462,6 @@ public class StageClient {
 	 * @return the parsed Document.
 	 * @throws StageException if there was an issue obtaining or parsing the document.
 	 */
-	@SuppressRestrictedWarnings(XMLUtils.class) // TODO remove when baseline > 2.179
 	protected Document getDocument(URL url) throws StageException {
 		try {
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
