@@ -56,6 +56,7 @@
 
 				<j:if test="${!empty(it.parameterDefinitions)}">
 				   <f:section title="${%Job properties}">
+					  <j:set var="escapeEntryTitleAndDescription" value="true"/>
 			          <j:forEach var="parameterDefinition" items="${it.parameterDefinitions}">
 			            <tbody>
 			               <st:include it="${parameterDefinition}" page="${parameterDefinition.descriptor.valuePage}" />
