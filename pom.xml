@@ -17,6 +17,7 @@
 	<url>http://wiki.jenkins-ci.org/display/JENKINS/M2+Release+Plugin</url>
 
 	<properties>
+	        <jenkins.version>2.375.2</jenkins.version>
 		<maven.test.version>3.1.0</maven.test.version>
 		<!--  Flaky tests do not belong gin this project -->
 		<surefire.rerunFailingTestsCount>0</surefire.rerunFailingTestsCount>
