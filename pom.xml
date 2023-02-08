@@ -251,12 +251,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<!--  TODO remove when baseline > 2.179 -->
-			<groupId>org.kohsuke</groupId>
-			<artifactId>access-modifier-suppressions</artifactId>
-			<version>${access-modifier-annotation.version}</version>
-		</dependency>
 	</dependencies>
 
 	<build>
