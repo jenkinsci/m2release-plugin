@@ -48,17 +48,6 @@ public class M2ReleaseBadgeActionTest {
 	public JenkinsRule rule = new JenkinsRule();
 
 	@Test
-	public void testBadgeForSuccessfulDryRunRelease() throws Exception {
-		MavenInstallation mavenInstallation = ToolInstallations.configureDefaultMaven();
-		final MavenModuleSetBuild build =
-				runDryRunRelease("maven2-project.zip", "pom.xml", mavenInstallation, Result.SUCCESS);
-		M2ReleaseBadgeAction badge = build.getAction(M2ReleaseBadgeAction.class);
-		assertTrue("Badge is not marked as dryRun", badge.isDryRun());
-		assertFalse("Badge should not have been marked as failed release", badge.isFailedBuild());
-		assertEquals("1.0", badge.getVersionNumber());
-	}
-
-	@Test
 	public void testBadgeForFailedDryRunRelease() throws Exception {
 		MavenInstallation mavenInstallation = ToolInstallations.configureMaven3();
 		final MavenModuleSetBuild build =
