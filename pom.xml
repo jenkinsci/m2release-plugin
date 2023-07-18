@@ -1,15 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.jenkins-ci.plugins.m2release</groupId>
 	<artifactId>m2release</artifactId>
 	<packaging>hpi</packaging>
-	<version>0.16.4-SNAPSHOT</version>
+	<version>${revision}${changelist}</version>
 
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>4.47</version>
+		<version>4.71</version>
+		<relativePath />
 	</parent>
 
 	<name>Jenkins Maven Release Plug-in Plug-in</name>
@@ -17,10 +19,10 @@
 	<url>http://wiki.jenkins-ci.org/display/JENKINS/M2+Release+Plugin</url>
 
 	<properties>
-	        <jenkins.version>2.375.2</jenkins.version>
-		<maven.test.version>3.1.0</maven.test.version>
-		<!--  Flaky tests do not belong gin this project -->
-		<surefire.rerunFailingTestsCount>0</surefire.rerunFailingTestsCount>
+		<revision>0.16.4</revision>
+		<changelist>-SNAPSHOT</changelist>
+		<jenkins.version>2.387.3</jenkins.version>
+		<gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
 	</properties>
 
 	<developers>
@@ -39,10 +41,10 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:https://github.com/jenkinsci/m2release-plugin.git</connection>
-		<developerConnection>scm:git:git@github.com:jenkinsci/m2release-plugin.git</developerConnection>
-		<url>https://github.com/jenkinsci/m2release-plugin</url>
-		<tag>HEAD</tag>
+		<connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
+		<developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
+		<url>https://github.com/${gitHubRepo}</url>
+		<tag>${scmTag}</tag>
 	</scm>
 
 	<licenses>
@@ -55,18 +57,11 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<!--  spotbugs is provided but this is compile so make sure we do not bundle this junk -->
-				<groupId>com.google.code.findbugs</groupId>
-				<artifactId>jsr305</artifactId>
-				<version>3.0.2</version>
-				<scope>provided</scope>
-				<optional>true</optional>
-			</dependency>
-			<dependency>
-				<!--  newer version needed by wiremock that is in the test harness -->
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-security</artifactId>
-				<version>9.4.20.v20190813</version>
+				<groupId>io.jenkins.tools.bom</groupId>
+				<artifactId>bom-2.387.x</artifactId>
+				<version>2244.vd60654536b_96</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -76,12 +71,12 @@
 		<dependency>
 			<groupId>org.jenkins-ci.main</groupId>
 			<artifactId>maven-plugin</artifactId>
-			<version>3.4</version>
+			<version>3.22</version>
 			<exclusions>
 				<exclusion>
-					<!--  newer than ships with Jenkins (how is this possible for the maven plugin to build?) -->
-					<groupId>commons-io</groupId>
-					<artifactId>commons-io</artifactId>
+					<!--  RequireUpperBoundDeps with maven-plugin's own dependency tree (how is this possible for the maven plugin to build?) -->
+					<groupId>javax.annotation</groupId>
+					<artifactId>javax.annotation-api</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -242,15 +237,9 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
-			<artifactId>wiremock-jre8</artifactId>
-			<version>2.25.1</version>
+			<artifactId>wiremock-jre8-standalone</artifactId>
+			<version>2.35.0</version>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.commons</groupId>
-					<artifactId>commons-lang3</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 	</dependencies>
 
