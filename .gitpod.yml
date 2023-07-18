@@ -3,7 +3,7 @@ image:
   file: .gitpod.Dockerfile
 
 tasks:
-  - init: sdk default java  11.0.15-tem && mvn clean verify
+  - init: mvn clean verify
 
 vscode:
   extensions:
