@@ -71,7 +71,7 @@
 		<dependency>
 			<groupId>org.jenkins-ci.main</groupId>
 			<artifactId>maven-plugin</artifactId>
-			<version>3.22</version>
+			<version>3.23</version>
 			<exclusions>
 				<exclusion>
 					<!--  RequireUpperBoundDeps with maven-plugin's own dependency tree (how is this possible for the maven plugin to build?) -->
