@@ -90,7 +90,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	private String                        releaseEnvVar                = DescriptorImpl.DEFAULT_RELEASE_ENVVAR;
 	private String                        releaseGoals                 = DescriptorImpl.DEFAULT_RELEASE_GOALS;
 	private String                        dryRunGoals                  = DescriptorImpl.DEFAULT_DRYRUN_GOALS;
-	public boolean                        selectCustomScmCommentPrefix = DescriptorImpl.DEFAULT_SELECT_CUSTOM_SCM_COMMENT_PREFIX;
+	private boolean                       selectCustomScmCommentPrefix = DescriptorImpl.DEFAULT_SELECT_CUSTOM_SCM_COMMENT_PREFIX;
 	private boolean                       selectAppendHudsonUsername   = DescriptorImpl.DEFAULT_SELECT_APPEND_HUDSON_USERNAME;
 	public boolean                        selectScmCredentials         = DescriptorImpl.DEFAULT_SELECT_SCM_CREDENTIALS;
 	
