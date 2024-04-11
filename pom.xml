@@ -21,7 +21,7 @@
 	<properties>
 		<revision>0.16.5</revision>
 		<changelist>-SNAPSHOT</changelist>
-		<jenkins.version>2.414.3</jenkins.version>
+		<jenkins.version>2.440.2</jenkins.version>
 		<gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
 	</properties>
 
