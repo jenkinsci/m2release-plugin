@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>4.78</version>
+		<version>4.80</version>
 		<relativePath />
 	</parent>
 
@@ -59,7 +59,7 @@
 			<dependency>
 				<groupId>io.jenkins.tools.bom</groupId>
 				<artifactId>bom-2.414.x</artifactId>
-				<version>2815.vf5d6f093b_23e</version>
+				<version>2950.va_633b_f42f759</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -237,7 +237,7 @@
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
 			<artifactId>wiremock-jre8-standalone</artifactId>
-			<version>2.35.1</version>
+			<version>2.35.2</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
