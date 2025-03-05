@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -53,8 +53,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.apache.maven.shared.release.versions.VersionParseException;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**
@@ -213,7 +213,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	}
 
 	@RequirePOST
-	public void doSubmit(StaplerRequest req, StaplerResponse resp) throws IOException, ServletException {
+	public void doSubmit(StaplerRequest2 req, StaplerResponse2 resp) throws IOException, ServletException {
 		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		M2ReleaseBuildWrapper m2Wrapper = project.getBuildWrappersList().get(M2ReleaseBuildWrapper.class);
 
@@ -296,7 +296,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		arguments.setScmTagName(scmTag);
 		arguments.setScmCommentPrefix(scmCommentPrefix);
 		arguments.setAppendHusonUserName(appendHusonUserName);
-		arguments.setHudsonUserName(Jenkins.getAuthentication().getName());
+		arguments.setHudsonUserName(Jenkins.getAuthentication2().getName());
 
 		
 		if (project.scheduleBuild(0, new ReleaseCause(), parameters, arguments)) {
@@ -326,11 +326,11 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 	 * Wrapper to access request data with a special treatment if POST is multipart encoded
 	 */
 	static class StaplerRequestWrapper {
-		private final StaplerRequest request;
+		private final StaplerRequest2 request;
 		private Map<String, FileItem> parsedFormData;
 		private boolean isMultipartEncoded;
 
-		public StaplerRequestWrapper(StaplerRequest request) throws ServletException {
+		public StaplerRequestWrapper(StaplerRequest2 request) throws ServletException {
 			this.request = request;
 
 			// JENKINS-16043, POST can be multipart encoded if there's a file parameter in the job

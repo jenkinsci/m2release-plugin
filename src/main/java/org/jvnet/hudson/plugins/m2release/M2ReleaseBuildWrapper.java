@@ -61,7 +61,7 @@ import org.jvnet.hudson.plugins.m2release.nexus.StageClient;
 import org.jvnet.hudson.plugins.m2release.nexus.StageException;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.verb.POST;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -433,7 +433,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		}
 
 		@Override
-		public boolean configure(StaplerRequest staplerRequest, JSONObject json) throws FormException {
+		public boolean configure(StaplerRequest2 staplerRequest, JSONObject json) throws FormException {
 			nexusSupport = json.containsKey("nexusSupport"); //$NON-NLS-1$
 			if (nexusSupport) {
 				JSONObject nexusParams = json.getJSONObject("nexusSupport"); //$NON-NLS-1$
