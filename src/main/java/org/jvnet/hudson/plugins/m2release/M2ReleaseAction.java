@@ -296,7 +296,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		arguments.setScmTagName(scmTag);
 		arguments.setScmCommentPrefix(scmCommentPrefix);
 		arguments.setAppendHusonUserName(appendHusonUserName);
-		arguments.setHudsonUserName(Jenkins.getAuthentication2().getName());
+arguments.setHudsonUserName(Jenkins.getAuthentication2().getName());
 
 		
 		if (project.scheduleBuild(0, new ReleaseCause(), parameters, arguments)) {
