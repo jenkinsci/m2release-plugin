@@ -1,52 +1,56 @@
 package org.jvnet.hudson.plugins.m2release;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
+import org.jvnet.hudson.test.recipes.LocalData;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
-import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.Issue;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.recipes.LocalData;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class M2ReleaseBuildWrapperTest {
+@WithJenkins
+class M2ReleaseBuildWrapperTest {
 
     private static final String PASSWORD = "mysecretpassword";
-    @Rule
-    public JenkinsRule jr = new JenkinsRule();
 
+    private JenkinsRule rule;
 
-    @SuppressWarnings("null") // eclipse does not understand fail() throws an Exception
+    @BeforeEach
+    void setUp(JenkinsRule rule) {
+        this.rule = rule;
+    }
+
     @Issue("SECURITY-1435")
     @Test
     @LocalData
-    public void testMigrationOfNexusPassword() throws Exception {
+    void testMigrationOfNexusPassword() throws Exception {
         M2ReleaseBuildWrapper.DescriptorImpl d =
-                jr.jenkins.getDescriptorByType(M2ReleaseBuildWrapper.DescriptorImpl.class);
-        if (d == null) {
-            fail("could not find the descriptor");
-        }
+                rule.jenkins.getDescriptorByType(M2ReleaseBuildWrapper.DescriptorImpl.class);
+        assertNotNull(d, "could not find the descriptor");
+
         assertThat("old password read ok", d.getNexusPassword(), notNullValue());
         assertThat("old password migrated", d.getNexusPassword().getPlainText(), is(PASSWORD));
 
-        jr.configRoundtrip();
+        rule.configRoundtrip();
 
         assertThat("round tripped password", d.getNexusPassword(), notNullValue());
         assertThat("round tripped password", d.getNexusPassword().getPlainText(), is(PASSWORD));
 
-        File f = new File(jr.jenkins.root, M2ReleaseBuildWrapper.class.getName() + ".xml");
+        File f = new File(rule.jenkins.root, M2ReleaseBuildWrapper.class.getName() + ".xml");
         try (FileInputStream fis = new FileInputStream(f)) {
             String content = IOUtils.toString(fis, StandardCharsets.UTF_8);
             assertThat("password should be encrypted", content, not(containsString(PASSWORD)));
         }
-
     }
 }
