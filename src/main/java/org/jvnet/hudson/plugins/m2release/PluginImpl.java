@@ -31,14 +31,13 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @author Kohsuke Kawaguchi
  */
 public class PluginImpl extends Plugin {
-    
-    @SuppressFBWarnings(value="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT", justification="the side effect is the permission is loaded")
+
     @Override
     public void start() throws Exception {
         // this permission designates a wrong parent group, which introduces a classloading problem
         // like HUDSON-4172.
         //
-        // As a work around, force loading of this permission so that by the time we start loading ACLs,
+        // As a workaround, force loading of this permission so that by the time we start loading ACLs,
         // we have this instance already registered, thereby avoiding a lookup.
         DescriptorImpl.CREATE_RELEASE.toString();
     }
