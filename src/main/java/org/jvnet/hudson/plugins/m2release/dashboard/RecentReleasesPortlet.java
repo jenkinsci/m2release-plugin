@@ -11,10 +11,10 @@ import jenkins.model.JenkinsLocationConfiguration;
 import org.jvnet.hudson.plugins.m2release.M2ReleaseBadgeAction;
 import org.jvnet.hudson.plugins.m2release.ReleaseCause;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.util.*;
 
@@ -91,16 +91,16 @@ public class RecentReleasesPortlet extends DashboardPortlet {
         return false;
     }
 
-    public void doRssAll(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
+    public void doRssAll(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, ServletException {
         rss(req, rsp, " all builds", RunList.fromRuns(getRecentReleases(20)));
     }
 
-    public void doRssFailed(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
+    public void doRssFailed(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, ServletException {
         rss(req, rsp, " failed builds", RunList.fromRuns(getRecentReleases(20)).failureOnly());
     }
 
     @SuppressWarnings("rawtypes")
-    private void rss(StaplerRequest req, StaplerResponse rsp, String suffix, RunList runs) throws IOException, ServletException {
+    private void rss(StaplerRequest2 req, StaplerResponse2 rsp, String suffix, RunList runs) throws IOException, ServletException {
         RSS.forwardToRss(getDisplayName() + suffix, getDashboard().getUrl() + getUrl(),
                 runs.newBuilds(), new RelativePathFeedAdapter(getDashboard().getUrl() + getUrl()), req, rsp);
     }
