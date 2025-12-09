@@ -477,9 +477,9 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 		 * Checks if the Nexus URL exists and we can authenticate against it.
 		 */
 		@POST
-		public FormValidation doUrlCheck(@QueryParameter String urlValue, 
-		                                 final @QueryParameter String usernameValue,
-		                                 final @QueryParameter Secret passwordValue) {
+		public FormValidation doUrlCheck(@QueryParameter("m2release.nexusURL") String urlValue, 
+		                                 final @QueryParameter("m2release.nexusUser") String usernameValue,
+		                                 final @QueryParameter Secret value) {
 			// this method can be used to check if a file exists anywhere in the file system,
 			// so it should be protected.
 			if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
@@ -503,11 +503,11 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 				if (!(url.getProtocol().equals("http") || url.getProtocol().equals("https"))) {
 					return FormValidation.error("protocol must be http or https");
 				}
-				StageClient client = new StageClient(new URL(testURL), usernameValue, passwordValue.getPlainText());
+				StageClient client = new StageClient(new URL(testURL), usernameValue, value.getPlainText());
 				client.checkAuthentication();
 			}
 			catch (MalformedURLException ex) {
-				return FormValidation.error(url + " is not a valid URL");
+				return FormValidation.error(urlValue + " is not a valid URL");
 			}
 			catch (StageException ex) {
 				FormValidation stageError = FormValidation.error(ex.getMessage());
