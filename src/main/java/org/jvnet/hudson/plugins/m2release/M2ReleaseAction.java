@@ -50,7 +50,6 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.apache.maven.shared.release.versions.VersionParseException;
 import org.kohsuke.stapler.StaplerRequest2;
@@ -160,7 +159,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		String version = "NaN";
 		final MavenModule rootModule = getRootModule();
-		if (rootModule != null && StringUtils.isNotBlank(rootModule.getVersion())) {
+		if (rootModule != null && rootModule.getVersion() != null && !rootModule.getVersion().isBlank()) {
 			try {
 				DefaultVersionInfo dvi = new DefaultVersionInfo(rootModule.getVersion());
 				version = dvi.getReleaseVersionString();
@@ -196,7 +195,7 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		M2ReleaseBuildWrapper.checkReleasePermission(project);
 		String version = "NaN-SNAPSHOT";
 		final MavenModule rootModule = getRootModule();
-		if (rootModule != null && StringUtils.isNotBlank(rootModule.getVersion())) {
+		if (rootModule != null && rootModule.getVersion() != null && !rootModule.getVersion().isBlank()) {
 			try {
 				DefaultVersionInfo dvi = new DefaultVersionInfo(rootModule.getVersion());
 				version = dvi.getNextVersion().getSnapshotVersionString();
@@ -267,12 +266,12 @@ public class M2ReleaseAction implements PermalinkProjectAction {
 		}
 
 		// if configured, expose the SCM credentails as additional parameters
-		if (StringUtils.isNotBlank(m2Wrapper.getScmPasswordEnvVar())) {
-			String scmPasswordVal = StringUtils.isEmpty(scmPassword) ? "" : scmPassword;
+		if (m2Wrapper.getScmPasswordEnvVar() != null && !m2Wrapper.getScmPasswordEnvVar().isBlank()) {
+			String scmPasswordVal = (scmPassword == null || scmPassword.isEmpty()) ? "" : scmPassword;
 			values.add(new PasswordParameterValue(m2Wrapper.getScmPasswordEnvVar(), scmPasswordVal));
 		}
-		if (StringUtils.isNotBlank(m2Wrapper.getScmUserEnvVar())) {
-			String scmUsernameVal = StringUtils.isEmpty(scmUsername) ? "" : scmUsername;
+		if (m2Wrapper.getScmUserEnvVar() != null && !m2Wrapper.getScmUserEnvVar().isBlank()) {
+			String scmUsernameVal = (scmUsername == null || scmUsername.isEmpty()) ? "" : scmUsername;
 			values.add(new StringParameterValue(m2Wrapper.getScmUserEnvVar(), scmUsernameVal));
 		}
 		values.add(new StringParameterValue(M2ReleaseBuildWrapper.DescriptorImpl.DEFAULT_RELEASE_VERSION_ENVVAR, releaseVersion));
