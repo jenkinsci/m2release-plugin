@@ -6,7 +6,7 @@
     <groupId>org.jenkins-ci.plugins.m2release</groupId>
     <artifactId>m2release</artifactId>
     <packaging>hpi</packaging>
-    <version>${revision}${changelist}</version>
+    <version>${changelist}</version>
 
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
@@ -21,8 +21,7 @@
     <url>https://wiki.jenkins-ci.org/display/JENKINS/M2+Release+Plugin</url>
 
     <properties>
-        <revision>0.16.5</revision>
-        <changelist>-SNAPSHOT</changelist>
+        <changelist>999999-SNAPSHOT</changelist>
         <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
         <jenkins.baseline>2.492</jenkins.baseline>
         <jenkins.version>${jenkins.baseline}.3</jenkins.version>
