@@ -55,7 +55,6 @@ import java.util.Map;
 
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang.StringUtils;
 import org.jvnet.hudson.plugins.m2release.nexus.Stage;
 import org.jvnet.hudson.plugins.m2release.nexus.StageClient;
 import org.jvnet.hudson.plugins.m2release.nexus.StageException;
@@ -122,7 +121,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 				/** intentionally blank */
 				@Override
 				public void buildEnvVars(Map<String, String> env) {
-					if (StringUtils.isNotBlank(releaseEnvVar)) {
+					if (releaseEnvVar != null && !releaseEnvVar.isBlank()) {
 						// inform others that we are NOT doing a release build
 						env.put(releaseEnvVar, "false");
 					}
@@ -168,7 +167,7 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 
 			@Override
 			public void buildEnvVars(Map<String, String> env) {
-				if (StringUtils.isNotBlank(releaseEnvVar)) {
+				if (releaseEnvVar != null && !releaseEnvVar.isBlank()) {
 					// inform others that we are doing a release build
 					env.put(releaseEnvVar, "true");
 				}
@@ -350,11 +349,11 @@ public class M2ReleaseBuildWrapper extends BuildWrapper {
 	}
 	
 	public String getReleaseGoals() {
-		return StringUtils.isBlank(releaseGoals) ? DescriptorImpl.DEFAULT_RELEASE_GOALS : releaseGoals;
+		return (releaseGoals == null || releaseGoals.isBlank()) ? DescriptorImpl.DEFAULT_RELEASE_GOALS : releaseGoals;
 	}
 	
 	public String getDryRunGoals() {
-		return StringUtils.isBlank(dryRunGoals) ? DescriptorImpl.DEFAULT_DRYRUN_GOALS : dryRunGoals;
+		return (dryRunGoals == null || dryRunGoals.isBlank()) ? DescriptorImpl.DEFAULT_DRYRUN_GOALS : dryRunGoals;
 	}
 	
 
